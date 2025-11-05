@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.6</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.medilabo</groupId>
+	<artifactId>patient-microservice</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>patient-microservice</name>
+	<description>Microservice handling patients&apos; personal information</description>
+	<url>https://github.com/Steezycoding/medilabo</url>
+	<organization>
+		<name>Medilabo</name>
+		<url>http://www.medilabo.fake</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>Apache-2.0</name>
+			<url>https://spdx.org/licenses/Apache-2.0.html</url>
+			<distribution>manual</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>Steezy</id>
+			<name>Michael ARTRU</name>
+			<email>steezy.coding@gmail.com</email>
+			<url>https://github.com/Steezycoding</url>
+			<organization>Openclassrooms</organization>
+			<organizationUrl>https://openclassrooms.com</organizationUrl>
+			<roles>
+				<role>student</role>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>Europe/Paris</timezone>
+			<properties>
+				<picUrl>https://1.gravatar.com/avatar/5c263539f2ba6c79cfff3295ac567e0ad7dde2fa5bd31794e1fbbc5d926d160f
+				</picUrl>
+			</properties>
+		</developer>
+	</developers>
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Tests -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
