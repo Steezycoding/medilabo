@@ -1,0 +1,17 @@
+server:
+  port: 9101
+spring:
+  application:
+    name: patient-microservice
+  datasource:
+    url: jdbc:mysql://localhost:3307/patientdb?createDatabaseIfNotExists=true
+    username: patientdb
+    password: patientdb
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8

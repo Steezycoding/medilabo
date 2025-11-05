@@ -1,0 +1,21 @@
+services:
+  patient-ms-db:
+    image: mysql:latest
+    container_name: patient-ms-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpwd
+      MYSQL_DATABASE: patientdb
+      MYSQL_USER: patientdb
+      MYSQL_PASSWORD: patientdb
+    ports:
+      - "3307:3306"
+    volumes:
+      - patient-ms-db-data:/var/lib/mysql
+    networks:
+      - patient-ms-network
+
+volumes:
+  patient-ms-db-data:
+
+networks:
+  patient-ms-network:

@@ -1,14 +1,3 @@
-CREATE TABLE patient
-(
-    id           LONG AUTO_INCREMENT PRIMARY KEY,
-    first_name   VARCHAR(50) NOT NULL,
-    last_name    VARCHAR(50) NOT NULL,
-    birth_date   DATE        NOT NULL,
-    gender       CHAR(1)     NOT NULL,
-    address      VARCHAR(255),
-    phone_number VARCHAR(20)
-);
-
 INSERT INTO patient (last_name, first_name, birth_date, gender, address, phone_number)
 VALUES ('TestNone', 'Test', DATE '1966-12-31', 'F', '1 Brookside St', '100-222-3333'),
        ('TestBorderline', 'Test', DATE '1945-06-24', 'M', '2 High St', '200-333-4444'),
