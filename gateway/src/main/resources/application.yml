@@ -1,8 +1,23 @@
 server:
-  port: 8080
+  port: 9001
 spring:
   application:
     name: gateway
+  security:
+    user:
+      name: user
+      password: user
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: patient-microservice
+              uri: http://localhost:9101
+              predicates:
+                - Path=api/patients/**
+              filters:
+                - StripPrefix=1
 management:
   endpoints:
     web:
