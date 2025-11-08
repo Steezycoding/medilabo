@@ -8,7 +8,7 @@ on:
     paths:
       - 'gateway/**'
       - 'patient-microservice/**'
-      - '.github/workflows/java-module-ci.yml'
+      - '.github/workflows/maven.yml'
 
 jobs:
   build-and-test:
