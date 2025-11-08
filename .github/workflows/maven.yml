@@ -46,7 +46,7 @@ jobs:
         run: ./${{ matrix.module }}/mvnw -f ${{ matrix.module }}/pom.xml -B "-Dtest=${{ matrix.unit_pattern }}" -DfailIfNoTests=false test
 
       - name: Run integration tests
-        run: ./${{ matrix.module }}/mvnw -f ${{ matrix.module }}/pom.xml -B "-Dtest=${{ matrix.integration_pattern }}" -DfailIfNoTests=false test
+        run: ./${{ matrix.module }}/mvnw -f ${{ matrix.module }}/pom.xml -B "-Dtest=${{ matrix.integration_pattern }}" -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false verify
 
       - name: Package module
         run: ./${{ matrix.module }}/mvnw -f ${{ matrix.module }}/pom.xml -B -DskipTests package
