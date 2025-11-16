@@ -1,0 +1,28 @@
+<section class="w-100 d-flex justify-content-center">
+  <div class="container-fluid">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="d-flex justify-content-center col-md-9 col-lg-3 col-xl-6 my-lg-5 py-lg-5">
+        <img src="logo.png" class="img-fluid" alt="MediLabo Logo">
+      </div>
+      <div class="col-md-8 col-lg-3 col-xl-5 offset-xl-1 my-lg-5 py-lg-5">
+        <h2 class="mb-4">Login</h2>
+        @if (error) {
+          <div class="alert alert-danger">
+            Username and/or password are incorrect.
+          </div>
+        }
+        <form class="needs-validation" (ngSubmit)="onSubmitLoginForm()" #loginForm="ngForm" novalidate>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" [class.is-invalid]="error" id="username" name="username" [(ngModel)]="credentials.username" placeholder="Username" required>
+            <label for="username" class="form-label">Username</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" [class.is-invalid]="error" id="password" name="password" [(ngModel)]="credentials.password" placeholder="Password" required>
+            <label for="password" class="form-label">Password</label>
+          </div>
+          <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Sign in</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
