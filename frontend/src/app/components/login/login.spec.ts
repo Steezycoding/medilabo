@@ -5,6 +5,7 @@ import {FormsModule} from '@angular/forms';
 
 import {LoginFormComponent} from './login';
 import {AuthService} from '../../services/auth.service';
+import {of} from 'rxjs';
 
 describe('LoginForm component Test Suite', () => {
   let fixture: ComponentFixture<LoginFormComponent>;
@@ -87,7 +88,7 @@ describe('LoginForm component Test Suite', () => {
   });
 
   it('should display error message if auth failed', () => {
-    authServiceSpy.login.and.returnValue(false);
+    authServiceSpy.login.and.returnValue(of(false));
 
     setInputValue('input[name="username"]', 'wrong');
     setInputValue('input[name="password"]', 'wrong');
@@ -110,7 +111,7 @@ describe('LoginForm component Test Suite', () => {
   });
 
   it('should not navigate if auth failed', () => {
-    authServiceSpy.login.and.returnValue(false);
+    authServiceSpy.login.and.returnValue(of(false));
     const navigateSpy = spyOn(router, 'navigateByUrl');
 
     setInputValue('input[name="username"]', 'wrong');
@@ -125,7 +126,7 @@ describe('LoginForm component Test Suite', () => {
   });
 
   it('should authenticate and redirect to "/dashboard" if "returnUrl" is absent', () => {
-    authServiceSpy.login.and.returnValue(true);
+    authServiceSpy.login.and.returnValue(of(true));
     const navigateSpy = spyOn(router, 'navigateByUrl');
 
     setInputValue('input[name="username"]', 'user');
@@ -151,7 +152,7 @@ describe('LoginForm component Test Suite', () => {
     });
 
     authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    authServiceSpy.login.and.returnValue(true);
+    authServiceSpy.login.and.returnValue(of(true));
 
     fixture.detectChanges();
 

@@ -20,13 +20,18 @@ export class LoginFormComponent {
   onSubmitLoginForm(): void {
     this.error = false;
 
-    const success = this.authService.login(this.credentials ?? { username: '', password: '' });
-
-    if (success) {
-      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/dashboard';
-      this.router.navigateByUrl(returnUrl);
-    } else {
-      this.error = true;
-    }
+    this.authService.login(this.credentials ?? { username: '', password: '' }).subscribe({
+      next: success => {
+        if (success) {
+          const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/dashboard';
+          this.router.navigateByUrl(returnUrl);
+        } else {
+          this.error = true;
+        }
+      },
+      error: () => {
+        this.error = true;
+      }
+    });
   }
 }
