@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 @Data
 @Builder
 public class PatientDto {
+	private Long id;
 	private String lastName;
 	private String firstName;
 	private String birthDate;
@@ -18,6 +19,7 @@ public class PatientDto {
 
 	public static PatientDto fromEntity(Patient patient) {
 		return PatientDto.builder()
+				.id(patient.getId())
 				.lastName(patient.getLastName())
 				.firstName(patient.getFirstName())
 				.birthDate(new SimpleDateFormat("yyyy-MM-dd").format(patient.getBirthDate()))

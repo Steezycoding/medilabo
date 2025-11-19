@@ -1,6 +1,7 @@
 package com.medilabo.patient_microservice.controller;
 
 import com.medilabo.patient_microservice.controller.dto.PatientDto;
+import com.medilabo.patient_microservice.exception.PatientIdNotFoundException;
 import com.medilabo.patient_microservice.service.contracts.PatientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -67,6 +68,38 @@ public class PatientControllerTests {
 					.andExpect(status().isNoContent());
 
 			verify(patientService, times(1)).getAll();
+			verifyNoMoreInteractions(patientService);
+		}
+	}
+
+	@Nested
+	@DisplayName("ENDPOINT '/patients/{id}' Tests")
+	class PatientsIdTests {
+		@Test
+		@DisplayName("GET /patients/{id} : Should respond OK & return the patient when patient found")
+		public void getPatientByIdTest() throws Exception {
+			Long patientId = 1L;
+			PatientDto patient = createPatientDto("Doe", "John", "1966-12-31", "M", "1 Brookside St", "111-222-3333");
+
+			when(patientService.getById(patientId)).thenReturn(patient);
+
+			mockMvc.perform(get("/patients/{id}", patientId))
+					.andExpect(status().isOk());
+
+			verify(patientService, times(1)).getById(patientId);
+			verifyNoMoreInteractions(patientService);
+		}
+
+		@Test
+		@DisplayName("GET /patients/{id} : Should respond NOT_FOUND when patient NOT found")
+		public void getPatientByIdNotFoundTest() throws Exception {
+			Long nonExistentPatientId = -1L;
+			doThrow(new PatientIdNotFoundException(nonExistentPatientId)).when(patientService).getById(anyLong());
+
+			mockMvc.perform(get("/patients/{id}", nonExistentPatientId))
+					.andExpect(status().isNotFound());
+
+			verify(patientService, times(1)).getById(nonExistentPatientId);
 			verifyNoMoreInteractions(patientService);
 		}
 	}
