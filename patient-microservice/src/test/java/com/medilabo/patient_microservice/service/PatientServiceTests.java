@@ -49,6 +49,8 @@ public class PatientServiceTests {
 			List<PatientDto> result = patientService.getAll();
 
 			assertThat(result).hasSize(2);
+			assertThat(result.get(0).getId()).isEqualTo(1L);
+			assertThat(result.get(1).getId()).isEqualTo(2L);
 
 			verify(patientRepository).findAll();
 			verifyNoMoreInteractions(patientRepository);
@@ -68,6 +70,7 @@ public class PatientServiceTests {
 			PatientDto result = patientService.getById(2L);
 
 			assertThat(result).isNotNull();
+			assertThat(result.getId()).isNull();
 			assertThat(result).isEqualTo(PatientDto.fromEntity(patient));
 
 			verify(patientRepository).findById(eq(2L));

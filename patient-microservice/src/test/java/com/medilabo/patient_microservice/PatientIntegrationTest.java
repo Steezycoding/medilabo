@@ -1,5 +1,6 @@
 package com.medilabo.patient_microservice;
 
+import com.medilabo.patient_microservice.controller.dto.PatientDto;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,7 +13,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.medilabo.patient_microservice.utils.JsonUtils.asJsonString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
@@ -56,6 +59,31 @@ public class PatientIntegrationTest {
 					.andExpect(jsonPath("$.birthDate").value("1966-12-31"))
 					.andExpect(jsonPath("$.gender").value("F"))
 					.andExpect(jsonPath("$.address").value("1 Brookside St"))
+					.andExpect(jsonPath("$.phoneNumber").value("100-222-3333"));
+		}
+
+		@Test
+		@DisplayName("PUT /patients/{id} with data should update a patient")
+		public void updatePatientById_shouldReturnOkAndJsonFromDb() throws Exception {
+			PatientDto updatedPatient = PatientDto.builder()
+					.lastName("TestBorderline")
+					.firstName("Updated First Name")
+					.birthDate("1980-01-01")
+					.gender("F")
+					.address("Updated Address")
+					.phoneNumber("100-222-3333")
+					.build();
+
+			mockMvc.perform(put("/patients/{id}", 1L)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(asJsonString(updatedPatient)))
+					.andExpect(status().isOk())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$.lastName").value("TestBorderline"))
+					.andExpect(jsonPath("$.firstName").value("Updated First Name"))
+					.andExpect(jsonPath("$.birthDate").value("1980-01-01"))
+					.andExpect(jsonPath("$.gender").value("F"))
+					.andExpect(jsonPath("$.address").value("Updated Address"))
 					.andExpect(jsonPath("$.phoneNumber").value("100-222-3333"));
 		}
 
