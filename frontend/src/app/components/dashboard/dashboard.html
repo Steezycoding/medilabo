@@ -1,5 +1,8 @@
 <div class="py-5">
-  <h1>Dashboard</h1>
-  <p>You are authenticated 🎉</p>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Dashboard</h1>
     <button class="btn btn-primary" (click)="onLogout()">Logout</button>
+  </div>
+
+  <app-patient-list></app-patient-list>
 </div>

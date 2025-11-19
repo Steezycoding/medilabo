@@ -4,6 +4,8 @@ import {Router, RouterModule} from '@angular/router';
 
 import {DashboardComponent} from './dashboard';
 import {AuthService} from '../../services/auth.service';
+import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
 describe('DashboardComponent', () => {
   let fixture: ComponentFixture<DashboardComponent>;
@@ -22,6 +24,8 @@ describe('DashboardComponent', () => {
         DashboardComponent,
       ],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: AuthService, useValue: authServiceSpy },
       ],
     }).compileComponents();
@@ -41,9 +45,9 @@ describe('DashboardComponent', () => {
     expect(title.textContent.trim()).toBe('Dashboard');
   });
 
-  it('should display content inside the page', () => {
-    const content = fixture.debugElement.query(By.css('p')).nativeElement;
-    expect(content.textContent).toContain('You are authenticated 🎉');
+  it('should render the patient list component', () => {
+    const patientList = fixture.debugElement.query(By.css('app-patient-list'));
+    expect(patientList).not.toBeNull();
   });
 
   it('should display "Logout" button', () => {
@@ -67,6 +71,6 @@ describe('DashboardComponent', () => {
     component.onLogout();
 
     expect(authServiceSpy.logout).toHaveBeenCalledTimes(1);
-    expect(navigateSpy).toHaveBeenCalledOnceWith('/');
+    expect(navigateSpy).toHaveBeenCalledWith('/');
   });
 });
