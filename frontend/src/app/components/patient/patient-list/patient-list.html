@@ -1,0 +1,29 @@
+<h2 class="text-primary">Patients</h2>
+<table class="table">
+  <thead>
+  <tr>
+    <th scope="col">Firstname</th>
+    <th scope="col">Lastname</th>
+    <th scope="col">Gender</th>
+    <th scope="col">Birthdate</th>
+    <th scope="col">Address</th>
+    <th scope="col">Phone</th>
+  </tr>
+  </thead>
+  <tbody>
+    @for (patient of patients; track patient.lastName) {
+      <tr>
+        <td>{{ patient.firstName }}</td>
+        <td>{{ patient.lastName }}</td>
+        <td>{{ patient.gender }}</td>
+        <td>{{ patient.birthDate }}</td>
+        <td>{{ patient.address }}</td>
+        <td>{{ patient.phoneNumber }}</td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="6" class="text-center">No patients found.</td>
+      </tr>
+    }
+  </tbody>
+</table>
