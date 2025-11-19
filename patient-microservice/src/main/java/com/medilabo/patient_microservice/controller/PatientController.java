@@ -1,14 +1,13 @@
 package com.medilabo.patient_microservice.controller;
 
 import com.medilabo.patient_microservice.controller.dto.PatientDto;
+import com.medilabo.patient_microservice.exception.PatientIdNotFoundException;
 import com.medilabo.patient_microservice.service.contracts.PatientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,5 +37,35 @@ public class PatientController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(patients);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<PatientDto> getPatientById(@PathVariable Long id) {
+		log.info("GET /patients/{}: Retrieving patient by ID", id);
+
+		PatientDto patient = patientService.getById(id);
+
+		return ResponseEntity.status(HttpStatus.OK)
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(patient);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<PatientDto> updatePatient(@PathVariable Long id, @RequestBody PatientDto patientDto) {
+		log.info("PUT /patients/{}: Updating patient...", id);
+
+		PatientDto updatedPatient = patientService.update(id, patientDto);
+
+		return ResponseEntity.status(HttpStatus.OK)
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(updatedPatient);
+	}
+
+	@ExceptionHandler(PatientIdNotFoundException.class)
+	public ResponseEntity<String> handlePatientIdNotFoundException(PatientIdNotFoundException ex) {
+		log.warn("PatientIdNotFoundException: {}", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(ex.getMessage());
 	}
 }

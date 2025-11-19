@@ -46,6 +46,20 @@ public class PatientIntegrationTest {
 		}
 
 		@Test
+		@DisplayName("GET /patients/{id} with data should return a patient")
+		public void getPatientById_shouldReturnOkAndJsonFromDb() throws Exception {
+			mockMvc.perform(get("/patients/{id}", 1L))
+					.andExpect(status().isOk())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$.lastName").value("TestNone"))
+					.andExpect(jsonPath("$.firstName").value("Test"))
+					.andExpect(jsonPath("$.birthDate").value("1966-12-31"))
+					.andExpect(jsonPath("$.gender").value("F"))
+					.andExpect(jsonPath("$.address").value("1 Brookside St"))
+					.andExpect(jsonPath("$.phoneNumber").value("100-222-3333"));
+		}
+
+		@Test
 		@Sql(statements = "DELETE FROM patient")
 		@DisplayName("GET /patients with NO data should return No Content")
 		void getAllPatients_whenNoData_shouldReturnNoContent() throws Exception {

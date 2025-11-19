@@ -30,4 +30,13 @@ public class PatientRepositoryTests {
 		assertThat(result.get(2).getLastName()).isEqualTo("TestInDanger");
 		assertThat(result.get(3).getLastName()).isEqualTo("TestEarlyOnset");
 	}
+
+	@Test
+	@DisplayName("findById() should return patient when ID exists")
+	public void findByIdTest() {
+		Patient result = patientRepository.findById(1L).orElse(null);
+
+		assertThat(result).isNotNull();
+		assertThat(result.getLastName()).isEqualTo("TestNone");
+	}
 }
