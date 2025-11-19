@@ -16,8 +16,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
+import static com.medilabo.patient_microservice.utils.JsonUtils.asJsonString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,12 +77,14 @@ public class PatientControllerTests {
 	@Nested
 	@DisplayName("ENDPOINT '/patients/{id}' Tests")
 	class PatientsIdTests {
+		Long patientId = 1L;
+		Long nonExistentPatientId = -1L;
+		PatientDto patient = createPatientDto("Doe", "John", "1966-12-31", "M", "1 Brookside St", "111-222-3333");
+		PatientDto updatedPatient = createPatientDto("Doe", "Updated First Name", "1966-12-31", "M", "1234 Updated Address", "111-222-3333");
+
 		@Test
 		@DisplayName("GET /patients/{id} : Should respond OK & return the patient when patient found")
 		public void getPatientByIdTest() throws Exception {
-			Long patientId = 1L;
-			PatientDto patient = createPatientDto("Doe", "John", "1966-12-31", "M", "1 Brookside St", "111-222-3333");
-
 			when(patientService.getById(patientId)).thenReturn(patient);
 
 			mockMvc.perform(get("/patients/{id}", patientId))
@@ -93,13 +97,40 @@ public class PatientControllerTests {
 		@Test
 		@DisplayName("GET /patients/{id} : Should respond NOT_FOUND when patient NOT found")
 		public void getPatientByIdNotFoundTest() throws Exception {
-			Long nonExistentPatientId = -1L;
 			doThrow(new PatientIdNotFoundException(nonExistentPatientId)).when(patientService).getById(anyLong());
 
 			mockMvc.perform(get("/patients/{id}", nonExistentPatientId))
 					.andExpect(status().isNotFound());
 
 			verify(patientService, times(1)).getById(nonExistentPatientId);
+			verifyNoMoreInteractions(patientService);
+		}
+
+		@Test
+		@DisplayName("PUT /patients/{id} : should respond OK & update the patient when patient found")
+		public void updatePatientByIdTest() throws Exception {
+			when(patientService.update(anyLong(), any(PatientDto.class))).thenReturn(updatedPatient);
+
+			mockMvc.perform(put("/patients/{id}", patientId)
+							.contentType("application/json")
+							.content(asJsonString(updatedPatient)))
+					.andExpect(status().isOk());
+
+			verify(patientService, times(1)).update(eq(patientId), eq(updatedPatient));
+			verifyNoMoreInteractions(patientService);
+		}
+
+		@Test
+		@DisplayName("PUT /patients/{id} : Should respond NOT_FOUND when patient NOT found")
+		public void updatePatientByIdNotFoundTest() throws Exception {
+			doThrow(new PatientIdNotFoundException(nonExistentPatientId)).when(patientService).update(anyLong(), any(PatientDto.class));
+
+			mockMvc.perform(put("/patients/{id}", nonExistentPatientId)
+							.contentType("application/json")
+							.content(asJsonString(updatedPatient)))
+					.andExpect(status().isNotFound());
+
+			verify(patientService, times(1)).update(eq(nonExistentPatientId), eq(updatedPatient));
 			verifyNoMoreInteractions(patientService);
 		}
 	}

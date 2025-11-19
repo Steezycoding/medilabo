@@ -50,6 +50,17 @@ public class PatientController {
 				.body(patient);
 	}
 
+	@PutMapping("/{id}")
+	public ResponseEntity<PatientDto> updatePatient(@PathVariable Long id, @RequestBody PatientDto patientDto) {
+		log.info("PUT /patients/{}: Updating patient...", id);
+
+		PatientDto updatedPatient = patientService.update(id, patientDto);
+
+		return ResponseEntity.status(HttpStatus.OK)
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(updatedPatient);
+	}
+
 	@ExceptionHandler(PatientIdNotFoundException.class)
 	public ResponseEntity<String> handlePatientIdNotFoundException(PatientIdNotFoundException ex) {
 		log.warn("PatientIdNotFoundException: {}", ex.getMessage());
