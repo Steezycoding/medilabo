@@ -1,0 +1,34 @@
+<h2 class="text-primary">Patient</h2>
+<div class="d-flex justify-content-center">
+  <form #patientForm="ngForm" (ngSubmit)="onSubmitPatientForm()">
+    <div class="mb-3">
+      <label for="firstName" class="form-label">First Name</label>
+      <input type="text" id="firstName" class="form-control" [(ngModel)]="patient.firstName" name="firstName" required>
+    </div>
+    <div class="mb-3">
+      <label for="lastName" class="form-label">Last Name</label>
+      <input type="text" id="lastName" class="form-control" [(ngModel)]="patient.lastName" name="lastName" required>
+    </div>
+    <div class="mb-3">
+      <label for="birthDate" class="form-label">Date of Birth</label>
+      <input type="date" id="birthDate" class="form-control" [(ngModel)]="patient.birthDate" name="birthDate" required>
+    </div>
+    <div class="mb-3">
+      <label for="gender" class="form-label">Gender</label>
+      <select id="gender" class="form-select" [(ngModel)]="patient.gender" name="gender" required>
+        <option value="" disabled>Select Gender</option>
+        <option value="M">Male</option>
+        <option value="F">Female</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="phoneNumber" class="form-label">Contact Number</label>
+      <input type="tel" id="phoneNumber" class="form-control" [(ngModel)]="patient.phoneNumber" name="phoneNumber" required>
+    </div>
+    <div class="mb-3">
+      <label for="address" class="form-label">Address</label>
+      <input id="address" class="form-control" [(ngModel)]="patient.address" name="address" required>
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="!patientForm.form.valid">Save Patient Details</button>
+  </form>
+</div>
