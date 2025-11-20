@@ -2,11 +2,7 @@ import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {catchError, map, Observable, of, throwError} from 'rxjs';
-
-interface Credentials {
-  username: string;
-  password: string;
-}
+import {Credentials} from '../model/Credentials';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -16,7 +12,7 @@ export class AuthService {
 
   private http = inject(HttpClient);
 
-  isAuthenticated = signal<boolean>(false);
+  isAuthenticated = signal<boolean>(this.hasExistingSession());
 
   login(credentials: Credentials): Observable<boolean> {
     const basicToken = btoa(`${credentials.username}:${credentials.password}`);
@@ -61,5 +57,9 @@ export class AuthService {
   private cleanSessionStorage(): void {
     sessionStorage.removeItem(this.STORAGE_KEY_AUTH);
     sessionStorage.removeItem(this.STORAGE_KEY_BASIC);
+  }
+
+  private hasExistingSession(): boolean {
+    return !!sessionStorage.getItem(this.STORAGE_KEY_AUTH) && !!sessionStorage.getItem(this.STORAGE_KEY_BASIC);
   }
 }

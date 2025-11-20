@@ -26,7 +26,7 @@ public class PatientServiceImpl implements PatientService {
 	public List<PatientDto> getAll() {
 		return patientRepository.findAll()
 				.stream()
-				.map(PatientDto::fromEntity)
+				.map(PatientDto::fromEntityWithId)
 				.toList();
 	}
 

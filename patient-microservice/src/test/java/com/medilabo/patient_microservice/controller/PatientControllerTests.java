@@ -41,8 +41,8 @@ public class PatientControllerTests {
 		mockMvc = MockMvcBuilders.standaloneSetup(patientController).build();
 
 		patientList = List.of(
-				createPatientDto("Doe", "John", "1966-12-31", "M", "1 Brookside St", "111-222-3333"),
-				createPatientDto("Smith", "Jane", "1974-06-24", "F", "20 Club Road", "444-555-6666")
+				createPatientWithIdDto(1L, "Doe", "John", "1966-12-31", "M", "1 Brookside St", "111-222-3333"),
+				createPatientWithIdDto(2L, "Smith", "Jane", "1974-06-24", "F", "20 Club Road", "444-555-6666")
 		);
 	}
 
@@ -133,6 +133,18 @@ public class PatientControllerTests {
 			verify(patientService, times(1)).update(eq(nonExistentPatientId), eq(updatedPatient));
 			verifyNoMoreInteractions(patientService);
 		}
+	}
+
+	private PatientDto createPatientWithIdDto(Long id, String lastName, String firstName, String birthDate, String gender, String address, String phoneNumber) {
+		return PatientDto.builder()
+				.id(id)
+				.lastName(lastName)
+				.firstName(firstName)
+				.birthDate(birthDate)
+				.gender(gender)
+				.address(address)
+				.phoneNumber(phoneNumber)
+				.build();
 	}
 
 	private PatientDto createPatientDto(String lastName, String firstName, String birthDate, String gender, String address, String phoneNumber) {

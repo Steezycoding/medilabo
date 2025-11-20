@@ -2,6 +2,7 @@ import {Component, inject} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Credentials} from '../../model/Credentials';
 
 @Component({
   selector: 'app-login',
@@ -15,12 +16,12 @@ export class LoginFormComponent {
   private authService = inject(AuthService);
 
   error = false;
-  credentials = { username: '', password: '' };
+  credentials: Credentials = { username: '', password: '' };
 
   onSubmitLoginForm(): void {
     this.error = false;
 
-    this.authService.login(this.credentials ?? { username: '', password: '' }).subscribe({
+    this.authService.login(this.credentials).subscribe({
       next: success => {
         if (success) {
           const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/dashboard';
