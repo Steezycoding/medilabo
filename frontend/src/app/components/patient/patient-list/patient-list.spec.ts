@@ -31,8 +31,8 @@ describe('PatientList', () => {
 
   it('should load patients on component init', () => {
     const mockPatients = [
-      { firstName: 'John', lastName: 'Doe', gender: 'M', birthDate: '1990-01-01', address: '1 Brookside St', phoneNumber: '100-222-3333' },
-      { firstName: 'Jane', lastName: 'Smith', gender: 'F', birthDate: '2001-11-20', address: '3 Club Road', phoneNumber: '300-444-5555' }
+      { id: '1', firstName: 'John', lastName: 'Doe', gender: 'M', birthDate: '1990-01-01', address: '1 Brookside St', phoneNumber: '100-222-3333' },
+      { id: '2', firstName: 'Jane', lastName: 'Smith', gender: 'F', birthDate: '2001-11-20', address: '3 Club Road', phoneNumber: '300-444-5555' }
     ];
     patientServiceSpy.getPatients.and.returnValue(of(mockPatients));
 

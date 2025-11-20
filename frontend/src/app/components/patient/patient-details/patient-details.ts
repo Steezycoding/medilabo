@@ -13,7 +13,7 @@ import {ActivatedRoute} from '@angular/router';
   styleUrl: './patient-details.scss',
 })
 export class PatientDetailsComponent implements OnInit {
-  protected patient: Patient = null!;
+  patient: Patient = null!;
   patientId: string = '';
 
   route = inject(ActivatedRoute);
@@ -26,12 +26,12 @@ export class PatientDetailsComponent implements OnInit {
         this.patient = data;
       },
       error: err => {
-        console.error("Error fetching patient data")
+        console.error(err)
       }
     });
   }
 
   onSubmitPatientForm() {
-    console.log("Patient form submitted:", this.patient);
+    this.patientService.updatePatient(this.patientId, this.patient);
   }
 }
