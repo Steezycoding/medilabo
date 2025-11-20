@@ -2,11 +2,7 @@ import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {catchError, map, Observable, of, throwError} from 'rxjs';
-
-interface Credentials {
-  username: string;
-  password: string;
-}
+import {Credentials} from '../model/Credentials';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
