@@ -21,6 +21,12 @@ export class PatientDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.patientId = this.route.snapshot.paramMap.get('id') || '';
+
+    if (this.patientId === '') {
+      console.error('Patient ID is missing in route parameters');
+      return;
+    }
+
     this.patientService.getPatientById(this.patientId).subscribe({
       next: data => {
         this.patient = data;

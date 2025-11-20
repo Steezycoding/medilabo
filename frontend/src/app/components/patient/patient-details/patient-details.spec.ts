@@ -3,7 +3,7 @@ import {PatientDetailsComponent} from './patient-details';
 import {PatientService} from '../../../services/patient.service';
 import {ActivatedRoute, convertToParamMap} from '@angular/router';
 import {Patient} from '../../../model/Patient';
-import {of} from 'rxjs';
+import {of, throwError} from 'rxjs';
 import {By} from '@angular/platform-browser';
 
 describe('PatientDetails', () => {
@@ -69,5 +69,28 @@ describe('PatientDetails', () => {
     fixture.detectChanges();
 
     expect(patientServiceSpy.updatePatient).toHaveBeenCalledWith('1', component.patient);
+  });
+
+  it('should log error when getPatientById fails', () => {
+    const error = new Error('Not found');
+    patientServiceSpy.getPatientById.and.returnValue(throwError(() => error));
+
+    const consoleErrorSpy = spyOn(console, 'error');
+
+    component.ngOnInit();
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(error);
+  });
+
+  it('should handle missing patient ID in route parameters', () => {
+    const consoleErrorSpy = spyOn(console, 'error');
+
+    (component as any).route = { snapshot: { paramMap: convertToParamMap({id: null}) } };
+
+    component.ngOnInit();
+
+    expect(component.patientId).toBe('');
+    //expect(patientServiceSpy.getPatientById).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Patient ID is missing in route parameters');
   });
 });

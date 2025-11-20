@@ -5,7 +5,7 @@ import {FormsModule} from '@angular/forms';
 
 import {LoginFormComponent} from './login';
 import {AuthService} from '../../services/auth.service';
-import {of} from 'rxjs';
+import {of, throwError} from 'rxjs';
 
 describe('LoginForm component Test Suite', () => {
   let fixture: ComponentFixture<LoginFormComponent>;
@@ -168,5 +168,25 @@ describe('LoginForm component Test Suite', () => {
 
     expect(authServiceSpy.login).toHaveBeenCalled();
     expect(navigateSpy).toHaveBeenCalledOnceWith('/dashboard');
+  });
+
+  it('should set error to true when auth service errors and not navigate', () => {
+    authServiceSpy.login.and.returnValue(throwError(() => new Error('network')));
+    const navigateSpy = spyOn(router, 'navigateByUrl');
+
+    setInputValue('input[name="username"]', 'user');
+    setInputValue('input[name="password"]', 'user');
+
+    fixture.detectChanges();
+
+    submitForm();
+    fixture.detectChanges();
+
+    expect(authServiceSpy.login).toHaveBeenCalledWith({
+      username: 'user',
+      password: 'user',
+    });
+    expect(component.error).toBeTrue();
+    expect(navigateSpy).not.toHaveBeenCalled();
   });
 });
