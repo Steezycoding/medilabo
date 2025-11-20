@@ -87,4 +87,36 @@ describe('AuthService', () => {
     expect(sessionStorage.getItem(STORAGE_KEY_BASIC)).toBeNull();
     expect(service.isAuthenticated()).toBeFalse();
   });
+
+  it('login should error when principal does not match credentials (throws in map)', (done: DoneFn) => {
+    const credentials = { username: 'user', password: 'pass' };
+
+    service.login(credentials).subscribe({
+      next: () => { fail('expected error'); done(); },
+      error: err => {
+        expect(err instanceof Error).toBeTrue();
+        expect(err.message).toBe('Principal does not match credentials');
+        done();
+      }
+    });
+
+    const req = httpMock.expectOne(r => r.url.endsWith('/auth/check') && r.method === 'GET');
+    req.flush({ principal: 'other' }, { status: 200, statusText: 'OK' });
+  });
+
+  it('login should rethrow non-401 backend errors (catchError returns throwError)', (done: DoneFn) => {
+    const credentials = { username: 'user', password: 'pass' };
+
+    service.login(credentials).subscribe({
+      next: () => { fail('expected error'); done(); },
+      error: err => {
+        expect(err).toBeTruthy();
+        expect((err as any).status).toBe(500);
+        done();
+      }
+    });
+
+    const req = httpMock.expectOne(r => r.url.endsWith('/auth/check') && r.method === 'GET');
+    req.flush({}, { status: 500, statusText: 'Server Error' });
+  });
 });
