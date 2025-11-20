@@ -13,4 +13,8 @@ export class PatientService {
   getPatients(): Observable<Patient[]> {
     return this.http.get<Patient[]>(this.apiPatientUrl);
   }
+
+  getPatientById(id: string): Observable<Patient> {
+    return this.http.get<Patient>(this.apiPatientUrl + `/${id}`);
+  }
 }
