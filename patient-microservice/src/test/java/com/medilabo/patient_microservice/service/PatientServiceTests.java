@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Month;
 import java.util.List;
@@ -138,6 +139,49 @@ public class PatientServiceTests {
 
 			assertThat(exception.getMessage()).isEqualTo(expectedExceptionMessage);
 			verify(patientRepository).findById(eq(noExistentPatientId));
+			verifyNoMoreInteractions(patientRepository);
+		}
+	}
+
+	@Nested
+	@DisplayName("create() Tests")
+	class CreateTests {
+		@Test
+		@DisplayName("Should create patient & return created patient")
+		public void givenPatientDto_whenCreate_thenReturnCreatedPatientDto() throws ParseException {
+			PatientDto newPatient = PatientDto.builder()
+					.lastName("Brown")
+					.firstName("Charlie")
+					.birthDate("1980-05-15")
+					.gender("M")
+					.address("50 Pine St")
+					.phoneNumber("777-888-9999")
+					.build();
+
+			Patient createdPatient = Patient.builder()
+					.id(3L)
+					.lastName(newPatient.getLastName())
+					.firstName(newPatient.getFirstName())
+					.birthDate(new SimpleDateFormat("yyyy-MM-dd").parse(newPatient.getBirthDate()))
+					.gender(newPatient.getGender())
+					.address(newPatient.getAddress())
+					.phoneNumber(newPatient.getPhoneNumber())
+					.build();
+
+			when(patientRepository.save(any(Patient.class))).thenReturn(createdPatient);
+
+			PatientDto result = patientService.create(newPatient);
+
+			assertThat(result).isNotNull();
+			assertThat(result.getId()).isEqualTo(3L);
+			assertThat(result.getLastName()).isEqualTo("Brown");
+			assertThat(result.getFirstName()).isEqualTo("Charlie");
+			assertThat(result.getBirthDate()).isEqualTo("1980-05-15");
+			assertThat(result.getGender()).isEqualTo("M");
+			assertThat(result.getAddress()).isEqualTo("50 Pine St");
+			assertThat(result.getPhoneNumber()).isEqualTo("777-888-9999");
+
+			verify(patientRepository).save(eq(newPatient.toEntity()));
 			verifyNoMoreInteractions(patientRepository);
 		}
 	}

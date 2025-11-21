@@ -18,8 +18,7 @@ import java.util.List;
 
 import static com.medilabo.patient_microservice.utils.JsonUtils.asJsonString;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,6 +69,23 @@ public class PatientControllerTests {
 					.andExpect(status().isNoContent());
 
 			verify(patientService, times(1)).getAll();
+			verifyNoMoreInteractions(patientService);
+		}
+
+		@Test
+		@DisplayName("POST /patients : Should respond CREATED & create a new patient")
+		public void createPatientTest() throws Exception {
+			PatientDto newPatient = createPatientDto("Brown", "Charlie", "1980-05-15", "M", "50 Pine St", "777-888-9999");
+			PatientDto createdPatient = createPatientWithIdDto(3L, "Brown", "Charlie", "1980-05-15", "M", "50 Pine St", "777-888-9999");
+
+			when(patientService.create(any(PatientDto.class))).thenReturn(createdPatient);
+
+			mockMvc.perform(post("/patients")
+							.contentType("application/json")
+							.content(asJsonString(newPatient)))
+					.andExpect(status().isCreated());
+
+			verify(patientService, times(1)).create(eq(newPatient));
 			verifyNoMoreInteractions(patientService);
 		}
 	}
