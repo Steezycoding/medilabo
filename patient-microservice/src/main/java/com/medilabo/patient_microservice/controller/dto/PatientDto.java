@@ -4,7 +4,9 @@ import com.medilabo.patient_microservice.domain.Patient;
 import lombok.Builder;
 import lombok.Data;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Data
 @Builder
@@ -37,6 +39,20 @@ public class PatientDto {
 				.gender(patient.getGender())
 				.address(patient.getAddress())
 				.phoneNumber(patient.getPhoneNumber())
+				.build();
+	}
+
+	public Patient toEntity() throws ParseException {
+		Date birthDate = new SimpleDateFormat("yyyy-MM-dd").parse(this.birthDate);
+
+		return Patient.builder()
+				.id(this.id)
+				.lastName(this.lastName)
+				.firstName(this.firstName)
+				.birthDate(birthDate)
+				.gender(this.gender)
+				.address(this.address)
+				.phoneNumber(this.phoneNumber)
 				.build();
 	}
 }
