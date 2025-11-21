@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.sql.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,5 +39,27 @@ public class PatientRepositoryTests {
 
 		assertThat(result).isNotNull();
 		assertThat(result.getLastName()).isEqualTo("TestNone");
+	}
+
+	@Test
+	@DisplayName("save() should persist a new patient")
+	public void saveTest() {
+		Patient newPatient = Patient.builder()
+				.lastName("TestCreate")
+				.firstName("Test")
+				.birthDate(Date.valueOf("1990-01-01"))
+				.gender("M")
+				.address("999 Main St")
+				.phoneNumber("999-888-7777")
+				.build();
+		Patient savedPatient = patientRepository.save(newPatient);
+		assertThat(savedPatient.getId()).isNotNull();
+		assertThat(savedPatient.getId()).isEqualTo(5L);
+		assertThat(savedPatient.getLastName()).isEqualTo("TestCreate");
+		assertThat(savedPatient.getFirstName()).isEqualTo("Test");
+		assertThat(savedPatient.getBirthDate()).isEqualTo(Date.valueOf("1990-01-01"));
+		assertThat(savedPatient.getGender()).isEqualTo("M");
+		assertThat(savedPatient.getAddress()).isEqualTo("999 Main St");
+		assertThat(savedPatient.getPhoneNumber()).isEqualTo("999-888-7777");
 	}
 }

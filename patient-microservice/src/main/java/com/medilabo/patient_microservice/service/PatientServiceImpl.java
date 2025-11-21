@@ -1,12 +1,14 @@
 package com.medilabo.patient_microservice.service;
 
 import com.medilabo.patient_microservice.controller.dto.PatientDto;
+import com.medilabo.patient_microservice.domain.Patient;
 import com.medilabo.patient_microservice.exception.PatientIdNotFoundException;
 import com.medilabo.patient_microservice.repository.PatientRepository;
 import com.medilabo.patient_microservice.service.contracts.PatientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -58,5 +60,15 @@ public class PatientServiceImpl implements PatientService {
 					return savedDto;
 				})
 				.orElseThrow(() -> new PatientIdNotFoundException(id));
+	}
+
+	@Override
+	public PatientDto create(PatientDto patientDto) throws ParseException {
+		Patient createdPatientEntity = patientRepository.save(patientDto.toEntity());
+
+		PatientDto createdPatientDto = PatientDto.fromEntityWithId(createdPatientEntity);
+		log.info("Patient created with ID '{}'.", createdPatientDto.getId());
+
+		return createdPatientDto;
 	}
 }

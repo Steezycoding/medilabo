@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Slf4j
@@ -59,6 +60,17 @@ public class PatientController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(updatedPatient);
+	}
+
+	@PostMapping()
+	public ResponseEntity<PatientDto> createPatient(@RequestBody PatientDto patientDto) throws ParseException {
+		log.info("POST /patients: Creating patient...");
+
+		PatientDto createdPatient = patientService.create(patientDto);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(createdPatient);
 	}
 
 	@ExceptionHandler(PatientIdNotFoundException.class)
