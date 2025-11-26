@@ -44,11 +44,11 @@ describe('PatientService', () => {
 
   it('getPatientById requests GET on /{id} and returns patient', (done: DoneFn) => {
     const id = '123';
-    const mock: Patient = { id, firstName: 'Jane', lastName: 'Roe' } as Patient;
+    const patient: Patient = { id, firstName: 'Jane', lastName: 'Roe' } as Patient;
 
     service.getPatientById(id).subscribe({
       next: p => {
-        expect(p).toEqual(mock);
+        expect(p).toEqual(patient);
         done();
       },
       error: err => { fail(err); done(); }
@@ -56,19 +56,40 @@ describe('PatientService', () => {
 
     const req = httpMock.expectOne(`${apiPatientBase}/${id}`);
     expect(req.request.method).toBe('GET');
-    req.flush(mock);
+    req.flush(patient);
   });
 
-  it('updatePatient requests PUT on /{id} with the patient details', () => {
+  it('updatePatient requests PUT on /{id} with the patient details', (done: DoneFn) => {
     const id = '42';
     const patient: Patient = { id, firstName: 'Foo', lastName: 'Bar' } as Patient;
 
-    service.updatePatient(id, patient);
+    service.updatePatient(id, patient).subscribe({
+      next: p => {
+        expect(p).toEqual(patient);
+        done();
+      },
+      error: err => { fail(err); done(); }
+    });
 
     const req = httpMock.expectOne(`${apiPatientBase}/${id}`);
     expect(req.request.method).toBe('PUT');
-    expect(req.request.body).toEqual(patient);
-    req.flush(null, { status: 204, statusText: 'No Content' });
+    req.flush(patient);
+  });
+
+  it('createPatient requests POST and returns the created patient', (done: DoneFn) => {
+    const mock: Patient = { id: '1', firstName: 'John', lastName: 'Doe' } as Patient;
+
+    service.createPatient(mock).subscribe({
+      next: patient => {
+        expect(patient).toEqual(mock);
+        done();
+      },
+      error: err => { fail(err); done(); }
+    });
+
+    const req = httpMock.expectOne(apiPatientBase);
+    expect(req.request.method).toBe('POST');
+    req.flush(mock);
   });
 
   it('getPatients should log error and propagate when backend fails', (done: DoneFn) => {
@@ -104,21 +125,39 @@ describe('PatientService', () => {
     req.flush({ message: 'not found' }, { status: 500, statusText: 'Server Error' });
   });
 
-  it('updatePatient should log error when backend fails (service subscribes internally)', () => {
+  it('updatePatient should log error when backend fails', (done: DoneFn) => {
     spyOn(console, 'error');
     const id = '42';
     const patient: Patient = { id, firstName: 'Foo', lastName: 'Bar' } as Patient;
 
-    service.updatePatient(id, patient);
+    service.updatePatient(id, patient).subscribe({
+      next: () => { fail('expected error'); done(); },
+      error: err => {
+        expect(console.error).toHaveBeenCalledWith('Error updating patient', jasmine.anything());
+        expect(err).toBeTruthy();
+        done();
+      }
+    });
 
     const req = httpMock.expectOne(`${apiPatientBase}/${id}`);
+    req.flush({ message: 'not found' }, { status: 500, statusText: 'Server Error' });
+  });
 
-    try {
-      req.flush({ message: 'update failed' }, { status: 500, statusText: 'Server Error' });
-    } catch (e) {
-      // expected rethrown error from catchError -> subscribe without error handler
-    }
+  it('createPatient should log error when backend fails', (done: DoneFn) => {
+    spyOn(console, 'error');
+    const id = '42';
+    const patient: Patient = { id, firstName: 'Foo', lastName: 'Bar' } as Patient;
 
-    expect(console.error).toHaveBeenCalledWith('Error updating patient', jasmine.anything());
+    service.createPatient(patient).subscribe({
+      next: () => { fail('expected error'); done(); },
+      error: err => {
+        expect(console.error).toHaveBeenCalledWith('Error creating patient', jasmine.anything());
+        expect(err).toBeTruthy();
+        done();
+      }
+    });
+
+    const req = httpMock.expectOne(`${apiPatientBase}`);
+    req.flush({ message: 'not found' }, { status: 500, statusText: 'Server Error' });
   });
 });

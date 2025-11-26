@@ -1,5 +1,5 @@
 <div class="container">
-  <h2 class="text-primary">{{ isEditMode ? 'Edit patient' : 'New patient' }}</h2>
+  <h2 class="text-primary">{{ patientId ? 'Edit Patient' : 'New Patient' }}</h2>
 
   @if (loading) {
     <div class="spinner-border" role="status">
@@ -41,7 +41,7 @@
           <label for="address" class="form-label">Address</label>
           <input id="address" class="form-control" [(ngModel)]="patient.address" name="address" required>
         </div>
-        <button type="submit" class="btn btn-primary" [disabled]="!patientForm.form.valid">{{ isEditMode ? 'Update patient' : 'Add new patient' }}</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!patientForm.form.valid">{{ patientId ? 'Update patient' : 'Add new patient' }}</button>
       </form>
     }
   }

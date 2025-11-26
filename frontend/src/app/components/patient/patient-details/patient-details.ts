@@ -14,8 +14,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 export class PatientDetailsComponent implements OnInit {
   patient: Patient = {} as Patient;
-  patientId: string = '';
-  isEditMode = false;
+  patientId: string | null = null;
   errorFetching = false;
   errorMessage: string = '';
   loading = false;
@@ -26,15 +25,9 @@ export class PatientDetailsComponent implements OnInit {
   private patientService = inject(PatientService);
 
   ngOnInit(): void {
-    this.patientId = this.route.snapshot.paramMap.get('id') || '';
-    this.isEditMode = this.patientId !== '';
+    this.patientId = this.route.snapshot.paramMap.get('id');
 
-    if (this.isEditMode) {
-      if (this.patientId === '') {
-        console.error('Patient ID is missing in route parameters');
-        return;
-      }
-
+    if (this.patientId) {
       this.loading = true;
       this.patientService.getPatientById(this.patientId).subscribe({
         next: data => {
@@ -55,7 +48,7 @@ export class PatientDetailsComponent implements OnInit {
 
   onSubmitPatientForm() {
     this.loading = true;
-    if (this.isEditMode) {
+    if (this.patientId) {
       this.patientService.updatePatient(this.patientId, this.patient).subscribe({
         next: (): void => {
           this.loading = false;
