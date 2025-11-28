@@ -22,17 +22,18 @@ class AuthenticationControllerTests {
 
 	@Test
 	@WithMockUser(username = "alice")
-	@DisplayName("Authenticated user should receive 200 OK with principal name")
-	void whenAuthenticated_thenReturns200WithPrincipal() throws Exception {
-		mockMvc.perform(get("/auth/check"))
+	@DisplayName("Authenticated user should receive 200 OK with JWT token")
+	void whenAuthenticated_thenReturns200WithJwtToken() throws Exception {
+		mockMvc.perform(get("/auth/token"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.principal").value("alice"));
+				.andExpect(jsonPath("$.token").isString());
 	}
 
 	@Test
 	@DisplayName("Unauthenticated user should receive 401 Unauthorized")
-	void whenNotAuthenticated_thenReturns401WithEmptyPrincipal() throws Exception {
-		mockMvc.perform(get("/auth/check"))
-				.andExpect(status().isUnauthorized());
+	void whenNotAuthenticated_thenReturns401WithNoJwtToken() throws Exception {
+		mockMvc.perform(get("/auth/token"))
+				.andExpect(status().isUnauthorized())
+				.andExpect(jsonPath("$.token").doesNotExist());
 	}
 }

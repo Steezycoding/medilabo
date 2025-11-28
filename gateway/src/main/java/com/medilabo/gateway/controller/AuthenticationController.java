@@ -1,5 +1,7 @@
 package com.medilabo.gateway.controller;
 
+import com.medilabo.gateway.service.JwtService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -12,25 +14,41 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
-	/**
-	 * Endpoint to check if the user is authenticated.
-	 * Returns the principal name if authenticated, otherwise returns 401 Unauthorized.
-	 *
-	 * @return ResponseEntity with authentication status and principal name if authenticated
-	 */
-	@GetMapping("/check")
-	public ResponseEntity<Map<String, Object>> check() {
-		Map<String, Object> body = new HashMap<>();
 
+	private final JwtService jwtService;
+
+	public AuthenticationController(JwtService jwtService) {
+		this.jwtService = jwtService;
+	}
+
+	/**
+	 * Endpoint to generate a JWT for authenticated users.
+	 * Uses the authenticated principal name as the subject.
+	 *
+	 * @return ResponseEntity containing the generated JWT
+	 */
+	@GetMapping("/token")
+	public ResponseEntity<Map<String, Object>> token() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-			body.put("principal", auth.getName());
+
+		if (isAuthenticated(auth)) {
+			String token = jwtService.generateToken(auth.getName());
+
+			Map<String, Object> body = new HashMap<>();
+			body.put("token", token);
+
+			log.debug("JWT generated for {}: {}", auth.getName(), token);
 			return ResponseEntity.ok(body);
 		}
-		
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+		log.warn("Unauthorized access attempt to /auth/token");
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	}
+
+	private boolean isAuthenticated(Authentication auth) {
+		return auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
 	}
 }

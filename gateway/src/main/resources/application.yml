@@ -7,6 +7,8 @@ spring:
     user:
       name: user
       password: user
+      roles:
+        - USER
   cloud:
     gateway:
       server:
@@ -27,7 +29,7 @@ security:
   cors:
     allowed:
       origins:
-        - "http://localhost:8080"
+        - http://localhost:8080
       methods:
         - GET
         - POST
@@ -38,3 +40,7 @@ security:
         - Authorization
         - Content-Type
     credentials: true
+  jwt:
+    secret: ${AUTH_JWT_SECRET:change-me-this-secret-should-be-long-32-chars}
+    expiration-seconds: ${ATUH_JWT_EXPIRATION_SECONDS:3600}
+    issuer: ${AUTH_JWT_ISSUER:medilabo-gateway}
