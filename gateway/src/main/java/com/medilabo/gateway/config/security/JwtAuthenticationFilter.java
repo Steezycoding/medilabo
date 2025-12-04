@@ -3,10 +3,10 @@ package com.medilabo.gateway.config.security;
 import com.medilabo.gateway.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -42,27 +42,45 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	) throws ServletException, IOException {
 		log.debug("JwtAuthenticationFilter executing for {}", request.getRequestURI());
 
-		String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+		String token = resolveToken(request);
 
-		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-			log.warn("Missing Authorization header");
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing JWT token");
+		if (token == null) {
+			log.warn("Missing JWT token within request cookies");
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing JWT token within request cookies");
 			return;
 		}
 
-		String token = authorizationHeader.substring(7);
-		if (jwtService.isValid(token)) {
+		try {
+			if (!jwtService.isValid(token)) {
+				log.warn("Invalid JWT token");
+				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
+				return;
+			}
+
 			String username = jwtService.extractUsername(token);
 			UsernamePasswordAuthenticationToken authenticationToken =
 					new UsernamePasswordAuthenticationToken(username, null, null);
 			authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-		} else {
-			log.warn("Invalid JWT token");
+		} catch (Exception e) {
+			log.warn("Error while validating JWT token", e);
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
 			return;
 		}
 
 		filterChain.doFilter(request, response);
+	}
+
+	private String resolveToken(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if ("access_token".equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
+		}
+
+		return null;
 	}
 }
