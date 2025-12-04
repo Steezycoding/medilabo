@@ -119,7 +119,7 @@ public class SecurityFilterChainConfig {
 		corsConfig.setAllowedOrigins(corsProperties.getAllowed().getOrigins());
 		corsConfig.setAllowedMethods(corsProperties.getAllowed().getMethods());
 		corsConfig.setAllowedHeaders(corsProperties.getAllowed().getHeaders());
-		corsConfig.setAllowCredentials(corsProperties.isAllowedCredentials());
+		corsConfig.setAllowCredentials(corsProperties.isCredentials());
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", corsConfig);

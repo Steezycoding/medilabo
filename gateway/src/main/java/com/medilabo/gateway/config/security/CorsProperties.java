@@ -50,7 +50,7 @@ public class CorsProperties {
 		this.allowed = allowed;
 	}
 
-	public boolean isAllowedCredentials() {
+	public boolean isCredentials() {
 		return credentials;
 	}
 
