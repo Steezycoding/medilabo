@@ -53,6 +53,30 @@ public class SecurityFilterChainConfig {
 	}
 
 	/**
+	 * Configure the security filter chain for the /auth/logout endpoint.
+	 * This endpoint is publicly accessible without authentication.
+	 *
+	 * @param http HttpSecurity
+	 *
+	 * @return SecurityFilterChain
+	 *
+	 * @throws Exception in case of any configuration error
+	 */
+	@Bean
+	@Order(2)
+	public SecurityFilterChain authLogoutFilterChain(HttpSecurity http) throws Exception {
+		return http
+				.securityMatcher("/auth/logout")
+				.csrf(AbstractHttpConfigurer::disable)
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(auth -> auth
+						.anyRequest().permitAll()
+				)
+				.build();
+	}
+
+	/**
 	 * Configure the security filter chain for all API endpoints.
 	 * Before accessing any API endpoint, the JWT authentication filter is applied.
 	 * All API endpoints require authentication using JWT tokens.
@@ -64,7 +88,7 @@ public class SecurityFilterChainConfig {
 	 * @throws Exception in case of any configuration error
 	 */
 	@Bean
-	@Order(2)
+	@Order(3)
 	public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
 		JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtService);
 
@@ -92,7 +116,7 @@ public class SecurityFilterChainConfig {
 	 * @throws Exception in case of any configuration error
 	 */
 	@Bean
-	@Order(3)
+	@Order(4)
 	public SecurityFilterChain globalFilterChain(HttpSecurity http) throws Exception {
 		return http
 				.securityMatcher("/**")

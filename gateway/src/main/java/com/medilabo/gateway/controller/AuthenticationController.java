@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,7 +62,27 @@ public class AuthenticationController {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	}
 
+	@PostMapping("/logout")
+	public ResponseEntity<Void> logout() {
+		ResponseCookie deleteCookie = ResponseCookie.from("access_token", "")
+				.httpOnly(true)
+				.secure(false)
+				.sameSite("Strict")
+				.path("/")
+				.maxAge(0)
+				.build();
+
+		log.debug("User logged out — clearing JWT cookie");
+
+		return ResponseEntity
+				.ok()
+				.header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+				.build();
+	}
+
 	private boolean isAuthenticated(Authentication auth) {
-		return auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
+		return auth != null
+				&& auth.isAuthenticated()
+				&& !(auth instanceof AnonymousAuthenticationToken);
 	}
 }

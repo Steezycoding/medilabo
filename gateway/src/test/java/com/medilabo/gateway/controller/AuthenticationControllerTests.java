@@ -9,6 +9,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -37,6 +38,18 @@ class AuthenticationControllerTests {
 		mockMvc.perform(get("/auth/token"))
 				.andExpect(status().isUnauthorized())
 				.andExpect(cookie().doesNotExist("access_token"))
+				.andExpect(content().string(""));
+	}
+
+	@Test
+	@WithMockUser(username = "alice")
+	@DisplayName("Authenticated user should logout successfully")
+	void whenAuthenticated_thenLogoutSuccessfully() throws Exception {
+		mockMvc.perform(post("/auth/logout"))
+				.andExpect(status().isOk())
+				.andExpect(cookie().exists("access_token"))
+				.andExpect(cookie().value("access_token", ""))
+				.andExpect(cookie().maxAge("access_token", 0))
 				.andExpect(content().string(""));
 	}
 }
