@@ -1,7 +1,9 @@
 <div class="py-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Dashboard</h1>
-    <button class="btn btn-primary" (click)="onLogout()">Logout</button>
+    <form (ngSubmit)="onSubmitLogoutForm()">
+      <button type="submit" class="btn btn-primary">Logout</button>
+    </form>
   </div>
 
   <app-patient-list></app-patient-list>
