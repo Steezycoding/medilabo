@@ -1,5 +1,6 @@
 package com.medilabo.gateway.config.security;
 
+import com.medilabo.gateway.constant.CookieTokenType;
 import com.medilabo.gateway.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -44,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	) throws ServletException, IOException {
 		log.debug("JwtAuthenticationFilter executing for {}", request.getRequestURI());
 
-		String token = resolveToken(request);
+		String token = jwtService.resolveTokenFromCookie(request, CookieTokenType.ACCESS);
 
 		if (token == null) {
 			log.warn("Missing JWT token within request cookies");
@@ -74,26 +75,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		filterChain.doFilter(request, response);
-	}
-
-	/**
-	 * Extracts the JWT token from the request cookies.
-	 *
-	 * @param request HttpServletRequest
-	 *
-	 * @return the JWT token if present, null otherwise
-	 */
-	private String resolveToken(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if ("access_token".equals(cookie.getName())) {
-					return cookie.getValue();
-				}
-			}
-		}
-
-		return null;
 	}
 
 	/**

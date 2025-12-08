@@ -42,5 +42,11 @@ security:
     credentials: true
   jwt:
     secret: ${AUTH_JWT_SECRET:change-me-this-secret-should-be-long-32-chars}
-    expiration-seconds: ${ATUH_JWT_EXPIRATION_SECONDS:3600}
+    access-expiration-seconds: ${AUTH_JWT_ACCESS_EXPIRATION_SECONDS:300}
+    refresh-expiration-seconds: ${AUTH_JWT_REFRESH_EXPIRATION_SECONDS:3600}
     issuer: ${AUTH_JWT_ISSUER:medilabo-gateway}
+logging:
+  level:
+    com:
+      medilabo:
+        gateway: DEBUG

@@ -1,11 +1,14 @@
 package com.medilabo.gateway.service;
 
+import com.medilabo.gateway.constant.CookieTokenType;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import javax.crypto.SecretKey;
 import java.lang.reflect.Field;
@@ -18,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class JwtServiceTests {
 	private static final String VALID_SECRET = "01234567890123456789012345678901"; // 32+ bytes
 	private static final String TOO_SHORT_SECRET = "0123456789";
-	private static final long DEFAULT_EXPIRATION_SECONDS = 3600L;
+	private static final long DEFAULT_EXPIRATION_SECONDS = 300L;
 	private static final String ISSUER = "medilabo-gateway";
 
 	private JwtService jwtService;
@@ -64,13 +67,13 @@ public class JwtServiceTests {
 	}
 
 	@Nested
+	@DisplayName("With INVALID secret Tests")
 	class InvalidSecretTests {
 		@BeforeEach
 		void setUp() {
 			jwtService = new JwtService();
 
 			setField(jwtService, "secret", TOO_SHORT_SECRET);
-			setField(jwtService, "expirationSeconds", DEFAULT_EXPIRATION_SECONDS);
 			setField(jwtService, "issuer", ISSUER);
 		}
 
@@ -86,13 +89,13 @@ public class JwtServiceTests {
 	}
 
 	@Nested
+	@DisplayName("With VALID secret Tests")
 	class ValidSecretTests {
 		@BeforeEach
 		void setUp() {
 			jwtService = new JwtService();
 
 			setField(jwtService, "secret", VALID_SECRET);
-			setField(jwtService, "expirationSeconds", DEFAULT_EXPIRATION_SECONDS);
 			setField(jwtService, "issuer", ISSUER);
 
 			jwtService.init();
@@ -103,7 +106,7 @@ public class JwtServiceTests {
 		void shouldCreateValidTokenWithCorrectSubjectAndIssuer() {
 			String username = "john.doe";
 
-			String token = jwtService.generateToken(username);
+			String token = jwtService.generateToken(username, DEFAULT_EXPIRATION_SECONDS);
 
 			assertThat(token).isNotNull();
 			assertThat(token).isNotBlank();
@@ -113,7 +116,7 @@ public class JwtServiceTests {
 		@DisplayName("Should validate a valid token")
 		void shouldValidateValidToken() {
 			String username = "john.doe";
-			String token = jwtService.generateToken(username);
+			String token = jwtService.generateToken(username, DEFAULT_EXPIRATION_SECONDS);
 
 			boolean isValid = jwtService.isValid(token);
 
@@ -121,10 +124,20 @@ public class JwtServiceTests {
 		}
 
 		@Test
+		@DisplayName("Should validate a valid token")
+		void shouldInvalidateInvalidToken() {
+			String token = "this-is-not-a-jwt";
+
+			boolean isValid = jwtService.isValid(token);
+
+			assertThat(isValid).isFalse();
+		}
+
+		@Test
 		@DisplayName("Should extract subject from token")
 		void shouldExtractSubjectFromToken() {
 			String username = "john.doe";
-			String token = jwtService.generateToken(username);
+			String token = jwtService.generateToken(username, DEFAULT_EXPIRATION_SECONDS);
 
 			String extracted = jwtService.extractUsername(token);
 
@@ -151,6 +164,34 @@ public class JwtServiceTests {
 
 			assertThat(isValid).isFalse();
 		}
-	}
 
+		@Test
+		@DisplayName("Should return invalid for expired token")
+		void shouldReturnInvalidForExpiredToken() throws InterruptedException {
+			String username = "john.doe";
+			// Create a token that expires immediately
+			String token = jwtService.generateToken(username, 1L);
+
+			// Wait to ensure the token is expired
+			Thread.sleep(1500);
+
+			boolean isValid = jwtService.isValid(token);
+
+			assertThat(isValid).isFalse();
+		}
+
+		@Test
+		@DisplayName("Shoukd resolves token from cookies or returns null when missing")
+		void resolveTokenFromCookie_returnsValueAndNullWhenMissing() {
+			MockHttpServletRequest request = new MockHttpServletRequest();
+			Cookie accessCookie = new Cookie(CookieTokenType.ACCESS.getValue(), "access-token-value");
+			request.setCookies(accessCookie);
+
+			String resolved = jwtService.resolveTokenFromCookie(request, CookieTokenType.ACCESS);
+			assertThat(resolved).isEqualTo("access-token-value");
+
+			String missing = jwtService.resolveTokenFromCookie(request, CookieTokenType.REFRESH);
+			assertThat(missing).isNull();
+		}
+	}
 }

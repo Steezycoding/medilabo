@@ -28,8 +28,9 @@ public class SecurityFilterChainConfig {
 	}
 
 	/**
-	 * Configure the security filter chain for the /auth/token endpoint.
-	 * This endpoint requires authentication using HTTP Basic authentication.
+	 * Configure the security filter chain for the <b>/auth</b> endpoints.<br />
+	 * <b>/auth/token</b> endpoint acts as the login endpoint requiring BASIC authentication.<br />
+	 * Other <b>/auth/**</b> endpoints are publicly accessible.
 	 *
 	 * @param http HttpSecurity
 	 *
@@ -41,38 +42,15 @@ public class SecurityFilterChainConfig {
 	@Order(1)
 	public SecurityFilterChain authTokenFilterChain(HttpSecurity http) throws Exception {
 		return http
-				.securityMatcher("/auth/token")
+				.securityMatcher("/auth/**")
 				.csrf(AbstractHttpConfigurer::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
-						.anyRequest().authenticated()
+						.requestMatchers("/auth/token").authenticated()
+						.requestMatchers("/auth/check", "/auth/refresh", "/auth/logout").permitAll()
 				)
 				.httpBasic(Customizer.withDefaults())
-				.build();
-	}
-
-	/**
-	 * Configure the security filter chain for the /auth/logout endpoint.
-	 * This endpoint is publicly accessible without authentication.
-	 *
-	 * @param http HttpSecurity
-	 *
-	 * @return SecurityFilterChain
-	 *
-	 * @throws Exception in case of any configuration error
-	 */
-	@Bean
-	@Order(2)
-	public SecurityFilterChain authLogoutFilterChain(HttpSecurity http) throws Exception {
-		return http
-				.securityMatcher("/auth/logout")
-				.csrf(AbstractHttpConfigurer::disable)
-				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(auth -> auth
-						.anyRequest().permitAll()
-				)
 				.build();
 	}
 
@@ -88,7 +66,7 @@ public class SecurityFilterChainConfig {
 	 * @throws Exception in case of any configuration error
 	 */
 	@Bean
-	@Order(3)
+	@Order(2)
 	public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
 		JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtService);
 
@@ -116,7 +94,7 @@ public class SecurityFilterChainConfig {
 	 * @throws Exception in case of any configuration error
 	 */
 	@Bean
-	@Order(4)
+	@Order(3)
 	public SecurityFilterChain globalFilterChain(HttpSecurity http) throws Exception {
 		return http
 				.securityMatcher("/**")
