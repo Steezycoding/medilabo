@@ -1,4 +1,8 @@
 export const environment = {
   production: false,
-  apiBaseUrl: ''
+  apiBaseUrl: '',
+  authTokenUri: '',
+  authCheckUri: '',
+  authRefreshUri: '',
+  authLogoutUri: '',
 };

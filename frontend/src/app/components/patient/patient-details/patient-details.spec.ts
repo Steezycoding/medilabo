@@ -49,7 +49,9 @@ describe('PatientDetails', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   it('should create PatientDetails component', () => {
@@ -160,6 +162,9 @@ describe('PatientDetails', () => {
   });
 
   it('should submit patient in "create" mode', () => {
+    patientServiceSpy.createPatient.and.returnValue(of(component.patient));
+    createComponentWithRoute({});
+
     component.patient = {
       firstName: 'Alice',
       lastName: 'Smith',
@@ -168,9 +173,6 @@ describe('PatientDetails', () => {
       phoneNumber: '987-654-2103',
       address: '456 Elm St'
     } as Patient;
-
-    patientServiceSpy.createPatient.and.returnValue(of(component.patient));
-    createComponentWithRoute({});
 
     component.onSubmitPatientForm();
 

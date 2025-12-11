@@ -6,6 +6,7 @@ import {DashboardComponent} from './dashboard';
 import {AuthService} from '../../services/auth.service';
 import {provideHttpClient} from '@angular/common/http';
 import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {of} from 'rxjs';
 
 describe('DashboardComponent', () => {
   let fixture: ComponentFixture<DashboardComponent>;
@@ -51,26 +52,28 @@ describe('DashboardComponent', () => {
   });
 
   it('should display "Logout" button', () => {
-    const btn = fixture.debugElement.query(By.css('button.btn.btn-primary'));
+    const btn = fixture.debugElement.query(By.css('button[type="submit"]'))
     expect(btn).not.toBeNull();
     expect(btn.nativeElement.textContent.trim()).toBe('Logout');
   });
 
-  it('should call "onLogout()" function when "Logout" button is clicked', () => {
-    const onLogoutSpy = spyOn(component, 'onLogout');
+  it('should call "onSubmitLogoutForm()" function when "Logout" button is clicked', () => {
+    const onLogoutSpy = spyOn(component, 'onSubmitLogoutForm');
 
-    const btn = fixture.debugElement.query(By.css('button.btn.btn-primary'));
-    btn.triggerEventHandler('click', {});
+    const btn = fixture.debugElement.query(By.css('button[type="submit"]'))
+    btn.nativeElement.click();
+    fixture.detectChanges()
 
     expect(onLogoutSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should call "authService.logout" and redirect to "/" within "onLogout()" function', () => {
+  it('should call "authService.logout" and redirect to "/login" within "onSubmitLogoutForm()" function', () => {
+    authServiceSpy.logout.and.returnValue(of(void 0));
     const navigateSpy = spyOn(router, 'navigateByUrl');
 
-    component.onLogout();
+    component.onSubmitLogoutForm();
 
     expect(authServiceSpy.logout).toHaveBeenCalledTimes(1);
-    expect(navigateSpy).toHaveBeenCalledWith('/');
+    expect(navigateSpy).toHaveBeenCalledWith('/login');
   });
 });
