@@ -19,6 +19,7 @@ export class PatientDetailsComponent implements OnInit {
   errorMessage: string = '';
   loading = false;
   fallbackRoute: string = '/dashboard';
+  isEditMode: boolean = false;
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -42,8 +43,24 @@ export class PatientDetailsComponent implements OnInit {
         }
       });
     } else {
+      this.isEditMode = true;
       this.patient = {} as Patient;
     }
+  }
+
+  plainTextGender(genderCode: string): string {
+    switch (genderCode) {
+      case 'M':
+        return 'Male';
+      case 'F':
+        return 'Female';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  onEditButtonClick() {
+    this.isEditMode = !this.isEditMode;
   }
 
   onSubmitPatientForm() {
