@@ -24,8 +24,8 @@
         <td>{{ patient.birthDate }}</td>
         <td>{{ patient.address }}</td>
         <td>{{ patient.phoneNumber }}</td>
-        <td class="d-flex justify-content-center">
-          <a href="/patient/{{ patient.id }}" class="btn btn-sm btn-outline-primary" role="button">Edit</a>
+        <td class="d-flex justify-content-end">
+          <a href="/patient/{{ patient.id }}" class="text-decoration-none"><i class="bi bi-file-earmark-text text-dark" style="font-size: 1.3rem;"></i></a>
         </td>
       </tr>
     } @empty {

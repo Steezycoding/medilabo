@@ -60,22 +60,74 @@ describe('PatientDetails', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should be in "edit" mode when route contains id and call getPatientById', () => {
+  it('should be in "view" mode onInit when route contains id', () => {
     patientServiceSpy.getPatientById.and.returnValue(of(mockPatient));
 
     createComponentWithRoute({ id: patientId });
 
+    const title = fixture.nativeElement.querySelector('h2') as HTMLHeadingElement;
+    const editBtn = fixture.nativeElement.querySelector('button#editToggle.btn.btn-primary') as HTMLButtonElement;
+    const closeEditBtn = fixture.nativeElement.querySelector('button#editToggle.btn-outline-danger') as HTMLButtonElement;
+    const submitBtn = fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+
     expect(component.patientId).toBe(patientId);
+    expect(component.isEditMode).toBeFalse();
+    expect(title.textContent?.trim()).toBe('Patient');
+    expect(editBtn).toBeTruthy();
+    expect(closeEditBtn).toBeNull();
+    expect(submitBtn).toBeFalsy();
+  });
+
+  it('should switch to "edit" mode when in "view" mode and "editToggle" button is clicked', async () => {
+    patientServiceSpy.getPatientById.and.returnValue(of(mockPatient));
+
+    createComponentWithRoute({ id: patientId });
+    await fixture.whenStable();
+
+    const editBtn = fixture.nativeElement.querySelector('button#editToggle.btn-primary') as HTMLButtonElement;
+
+    // Switch to "edit" mode
+    expect(editBtn).toBeTruthy();
+    editBtn.click();
+    fixture.detectChanges();
 
     const title = fixture.nativeElement.querySelector('h2') as HTMLHeadingElement;
-    expect(title.textContent?.trim()).toBe('Edit Patient');
-
+    const closeEditBtn = fixture.nativeElement.querySelector('button#editToggle.btn-outline-danger') as HTMLButtonElement;
     const submitBtn = fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+
+    expect(component.isEditMode).toBeTrue();
+    expect(title.textContent?.trim()).toBe('Patient (edit)');
+    expect(closeEditBtn).toBeTruthy();
     expect(submitBtn).toBeTruthy();
     expect(submitBtn.textContent?.trim()).toBe('Update patient');
     expect(submitBtn.disabled).toBeFalse();
+  });
 
-    expect(patientServiceSpy.getPatientById).toHaveBeenCalledWith(patientId);
+  it('should switch to "view" mode when in "edit" mode and "editToggle" button is clicked', async () => {
+    patientServiceSpy.getPatientById.and.returnValue(of(mockPatient));
+
+    createComponentWithRoute({ id: patientId });
+    await fixture.whenStable();
+
+    // Manually set to "edit" mode
+    component.isEditMode = true;
+    fixture.detectChanges();
+
+    const closeEditBtn = fixture.nativeElement.querySelector('button#editToggle.btn-outline-danger') as HTMLButtonElement;
+
+    // Switch back to "view" mode
+    expect(closeEditBtn).toBeTruthy();
+    closeEditBtn.click();
+    fixture.detectChanges();
+
+    const title = fixture.nativeElement.querySelector('h2') as HTMLHeadingElement;
+    const submitBtn = fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const editBtn = fixture.nativeElement.querySelector('button#editToggle.btn-primary') as HTMLButtonElement;
+
+    expect(component.isEditMode).toBeFalse();
+    expect(editBtn).toBeTruthy();
+    expect(title.textContent?.trim()).toBe('Patient');
+    expect(submitBtn).toBeFalsy();
   });
 
   it('should load patient and bind data to form fields onInit', async () => {
@@ -98,9 +150,11 @@ describe('PatientDetails', () => {
     expect(firstNameInput.value).toBe(mockPatient.firstName);
     expect(lastNameInput.value).toBe(mockPatient.lastName);
     expect(birthDateInput.value).toBe(mockPatient.birthDate);
-    expect(genderSelect.value).toBe(mockPatient.gender);
+    expect(genderSelect.value).toBe(component.plainTextGender(mockPatient.gender));
     expect(phoneInput.value).toBe(mockPatient.phoneNumber);
     expect(addressInput.value).toBe(mockPatient.address);
+
+    expect(patientServiceSpy.getPatientById).toHaveBeenCalledWith(patientId);
   });
 
   it('should log error when "patientService.getPatientById" fails', () => {
@@ -145,8 +199,9 @@ describe('PatientDetails', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith('Patient update failed.', jasmine.anything());
   });
 
-  it('should be in "create" mode when route has no id', () => {
+  it('should be in "create" mode when route has no id', async () => {
     createComponentWithRoute({});
+    await fixture.whenStable();
 
     expect(component.patientId).toBeNull();
     expect(component.patient).toBeDefined();
@@ -162,10 +217,9 @@ describe('PatientDetails', () => {
   });
 
   it('should submit patient in "create" mode', () => {
-    patientServiceSpy.createPatient.and.returnValue(of(component.patient));
     createComponentWithRoute({});
 
-    component.patient = {
+    const newPatient: Patient = {
       firstName: 'Alice',
       lastName: 'Smith',
       birthDate: '1985-05-15',
@@ -173,6 +227,9 @@ describe('PatientDetails', () => {
       phoneNumber: '987-654-2103',
       address: '456 Elm St'
     } as Patient;
+
+    patientServiceSpy.createPatient.and.returnValue(of(component.patient));
+    component.patient = newPatient;
 
     component.onSubmitPatientForm();
 
@@ -189,5 +246,20 @@ describe('PatientDetails', () => {
     component.onSubmitPatientForm();
 
     expect(consoleErrorSpy).toHaveBeenCalledWith('Patient creation failed.', jasmine.anything());
+  });
+
+  it('should return and display "Unknown" for unsupported or missing gender (default case)', async () => {
+    patientServiceSpy.getPatientById.and.returnValue(of({ ...mockPatient, gender: 'X' }));
+
+    createComponentWithRoute({ id: patientId });
+    await fixture.whenStable();
+
+    expect(component.plainTextGender('X')).toBe('Unknown');
+
+    const genderInput = fixture.nativeElement.querySelector('#gender') as HTMLInputElement;
+    expect(genderInput).toBeTruthy();
+    expect(genderInput.value).toBe('Unknown');
+
+    expect(component.plainTextGender(undefined as any)).toBe('Unknown');
   });
 });
