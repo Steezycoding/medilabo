@@ -34,7 +34,6 @@ public class JwtVerifierService {
 	}
 
 	public Jws<Claims> verify(String token) {
-		// throws si signature invalide, token expiré, issuer incorrect, etc.
 		return Jwts.parser()
 				.requireIssuer(issuer)
 				.verifyWith(secretKey)
