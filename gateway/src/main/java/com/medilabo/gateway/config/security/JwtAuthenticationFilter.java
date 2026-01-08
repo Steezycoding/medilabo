@@ -43,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			HttpServletResponse response,
 			FilterChain filterChain
 	) throws ServletException, IOException {
+		MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
 		log.debug("JwtAuthenticationFilter executing for {}", request.getRequestURI());
 
 		String token = jwtService.resolveTokenFromCookie(request, CookieTokenType.ACCESS);
@@ -66,7 +67,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-			MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
 			mutableRequest.putHeader("Authorization", "Bearer " + token);
 		} catch (Exception e) {
 			log.warn("Error while validating JWT token", e);
@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		filterChain.doFilter(request, response);
+		filterChain.doFilter(mutableRequest, response);
 	}
 
 	/**

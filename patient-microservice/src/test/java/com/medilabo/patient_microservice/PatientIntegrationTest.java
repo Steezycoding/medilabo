@@ -1,14 +1,17 @@
 package com.medilabo.patient_microservice;
 
 import com.medilabo.patient_microservice.controller.dto.PatientDto;
+import com.medilabo.patient_microservice.utils.JwtUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import static com.medilabo.patient_microservice.utils.JsonUtils.asJsonString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -22,6 +25,9 @@ public class PatientIntegrationTest {
 	@Autowired
 	private MockMvc mockMvc;
 
+	@Autowired
+	private JwtUtils jwtUtils;
+
 	@Nested
 	@DisplayName("ENDPOINT Tests")
 	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -30,7 +36,8 @@ public class PatientIntegrationTest {
 		@Order(1)
 		@DisplayName("GET /patients with data should return all patients")
 		public void getAllPatients_shouldReturnOkAndJsonFromDb() throws Exception {
-			mockMvc.perform(get("/patients"))
+			mockMvc.perform(get("/patients")
+							.with(withGatewayJwt()))
 					.andExpect(status().isOk())
 					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 					.andExpect(jsonPath("$.length()").value(4))
@@ -49,7 +56,8 @@ public class PatientIntegrationTest {
 		@Order(2)
 		@DisplayName("GET /patients/{id} with data should return a patient")
 		public void getPatientById_shouldReturnOkAndJsonFromDb() throws Exception {
-			mockMvc.perform(get("/patients/{id}", 1L))
+			mockMvc.perform(get("/patients/{id}", 1L)
+							.with(withGatewayJwt()))
 					.andExpect(status().isOk())
 					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 					.andExpect(jsonPath("$.lastName").value("TestNone"))
@@ -74,6 +82,7 @@ public class PatientIntegrationTest {
 					.build();
 
 			mockMvc.perform(put("/patients/{id}", 1L)
+							.with(withGatewayJwt())
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(asJsonString(updatedPatient)))
 					.andExpect(status().isOk())
@@ -100,6 +109,7 @@ public class PatientIntegrationTest {
 					.build();
 
 			mockMvc.perform(post("/patients")
+							.with(withGatewayJwt())
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(asJsonString(newPatient)))
 					.andExpect(status().isCreated())
@@ -117,7 +127,8 @@ public class PatientIntegrationTest {
 		@Order(5)
 		@DisplayName("GET /patients Check Integrity (with updated & created)")
 		public void getAllPatients_shouldReturnOkAndJsonFromDbWithUpdatedCreated() throws Exception {
-			mockMvc.perform(get("/patients"))
+			mockMvc.perform(get("/patients")
+							.with(withGatewayJwt()))
 					.andExpect(status().isOk())
 					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 					.andExpect(jsonPath("$.length()").value(5))
@@ -135,9 +146,23 @@ public class PatientIntegrationTest {
 		@Sql(statements = "DELETE FROM patient")
 		@DisplayName("GET /patients with NO data should return No Content")
 		void getAllPatients_whenNoData_shouldReturnNoContent() throws Exception {
-			mockMvc.perform(get("/patients"))
+			mockMvc.perform(get("/patients")
+							.with(withGatewayJwt()))
 					.andExpect(status().isNoContent())
 					.andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE));
 		}
+	}
+
+	/**
+	 * Simulates obtaining a bearer token from the Gateway service.
+	 * In a real-world scenario, this would involve making an HTTP request to the Gateway's authentication endpoint.
+	 *
+	 * @return A mock bearer token string.
+	 */
+	private RequestPostProcessor withGatewayJwt() {
+		return request -> {
+			request.addHeader(HttpHeaders.AUTHORIZATION, jwtUtils.generateToken());
+			return request;
+		};
 	}
 }
