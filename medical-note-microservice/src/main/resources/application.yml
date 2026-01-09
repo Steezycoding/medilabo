@@ -1,0 +1,9 @@
+server:
+  port: 9102
+spring:
+  application:
+    name: medical-note-microservice
+  data:
+    mongodb:
+      port: 27017
+      database: medicalnotedb

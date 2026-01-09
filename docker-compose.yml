@@ -14,8 +14,19 @@ services:
     networks:
       - patient-ms-network
 
+  medical-note-ms-db:
+    image: mongodb/mongodb-community-server:latest
+    container_name: medical-note-ms-db
+    ports:
+      - "27018:27017"
+    volumes:
+      - medical-note-ms-db-data:/data/db
+    networks:
+      - patient-ms-network
+
 volumes:
   patient-ms-db-data:
+  medical-note-ms-db-data:
 
 networks:
   patient-ms-network:
