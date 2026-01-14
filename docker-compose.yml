@@ -1,32 +1,33 @@
 services:
+  # Init databases for microservices
   patient-ms-db:
     image: mysql:latest
     container_name: patient-ms-db
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpwd
-      MYSQL_DATABASE: patientdb
-      MYSQL_USER: patientdb
-      MYSQL_PASSWORD: patientdb
+    env_file:
+      - .env
     ports:
       - "3307:3306"
     volumes:
       - patient-ms-db-data:/var/lib/mysql
     networks:
-      - patient-ms-network
+      - medilabo-network
 
   medical-note-ms-db:
-    image: mongodb/mongodb-community-server:latest
+    image: mongo:latest
     container_name: medical-note-ms-db
+    env_file:
+      - .env
     ports:
       - "27018:27017"
     volumes:
       - medical-note-ms-db-data:/data/db
+      - ./medical-note-microservice/src/main/resources/mongo-seed:/docker-entrypoint-initdb.d:ro
     networks:
-      - patient-ms-network
+      - medilabo-network
 
 volumes:
   patient-ms-db-data:
   medical-note-ms-db-data:
 
 networks:
-  patient-ms-network:
+  medilabo-network:
