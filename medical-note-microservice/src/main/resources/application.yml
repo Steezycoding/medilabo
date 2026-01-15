@@ -8,3 +8,6 @@ spring:
       host: localhost
       port: 27018
       database: medicalnotedb
+      authentication-database: admin
+      username: root
+      password: example
