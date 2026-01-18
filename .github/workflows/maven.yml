@@ -8,6 +8,7 @@ on:
     paths:
       - 'gateway/**'
       - 'patient-microservice/**'
+      - 'medical-record-microservice/**'
       - '.github/workflows/maven.yml'
 
 jobs:
@@ -22,6 +23,10 @@ jobs:
             integration_pattern: '*IntegrationTest'
           - name: Patient microservice
             module: patient-microservice
+            unit_pattern: '*Tests'
+            integration_pattern: '*IntegrationTest'
+          - name: MedicalNote microservice
+            module: medical-record-microservice
             unit_pattern: '*Tests'
             integration_pattern: '*IntegrationTest'
     name: Run ${{ matrix.name }} pipeline
