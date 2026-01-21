@@ -20,4 +20,13 @@ public class MedicalNoteDto {
 				.note(note.getNote())
 				.build();
 	}
+
+	public MedicalNote toEntity() {
+		return MedicalNote.builder()
+				.id(this.id)
+				.patId(this.patId)
+				.patient(this.patient)
+				.note(this.note)
+				.build();
+	}
 }

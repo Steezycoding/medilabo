@@ -1,12 +1,15 @@
 package com.medilabo.medicalnotemicroservice.service;
 
 import com.medilabo.medicalnotemicroservice.controller.dto.MedicalNoteDto;
+import com.medilabo.medicalnotemicroservice.domain.MedicalNote;
 import com.medilabo.medicalnotemicroservice.repository.MedicalNoteRepository;
 import com.medilabo.medicalnotemicroservice.service.contracts.MedicalNoteService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class MedicalNoteServiceImpl implements MedicalNoteService {
 
@@ -28,5 +31,22 @@ public class MedicalNoteServiceImpl implements MedicalNoteService {
 		return medicalNoteRepository.getMedicalNotesByPatId(patientId).stream()
 				.map(MedicalNoteDto::fromEntity)
 				.toList();
+	}
+
+	/**
+	 * Creates a new medical note.
+	 *
+	 * @param medicalNoteDto The MedicalNoteDto object containing the details of the medical note to be created.
+	 *
+	 * @return The created MedicalNoteDto object.
+	 */
+	@Override
+	public MedicalNoteDto create(MedicalNoteDto medicalNoteDto) {
+		MedicalNote createdMedicalNoteEntity = medicalNoteRepository.save(medicalNoteDto.toEntity());
+
+		MedicalNoteDto createdMedicalNoteDto = MedicalNoteDto.fromEntity(createdMedicalNoteEntity);
+		log.info("MedicalNote created with ID '{}'.", createdMedicalNoteDto.getId());
+
+		return createdMedicalNoteDto;
 	}
 }

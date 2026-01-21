@@ -15,9 +15,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
+import static com.medilabo.medicalnotemicroservice.utils.JsonUtils.asJsonString;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,7 +49,7 @@ class MedicalNoteControllerTests {
 
 	@Nested
 	@DisplayName("ENDPOINT '/medical-notes/patient/{id}' Tests")
-	class MedicalNotesTests {
+	class MedicalNotesPatientIdTests {
 		@Test
 		@DisplayName("GET /medical-notes/patient/{id} : Should respond OK & return the list of all notes with patient id")
 		void getPatientMedicalNotesTest() throws Exception {
@@ -80,6 +82,27 @@ class MedicalNoteControllerTests {
 			verify(medicalNoteService, times(1)).getMedicalNotesByPatientId(eq(1));
 			verifyNoMoreInteractions(medicalNoteService);
 		}
+	}
+
+	@Nested
+	@DisplayName("ENDPOINT '/medical-notes' Tests")
+	class MedicalNotesTests {
+		@Test
+		@DisplayName("POST /medical-notes : Should respond CREATED & create a new medical note")
+		void getAllMedicalNotesTest() throws Exception {
+			MedicalNoteDto newMedicalNote = createMedicalNoteDto(null, 1, "JohnDoe", "Annual check-up completed.");
+			MedicalNoteDto createdMedicalNote = createMedicalNoteDto("e345f678", 1, "JohnDoe", "Annual check-up completed.");
+			when(medicalNoteService.create(any(MedicalNoteDto.class))).thenReturn(createdMedicalNote);
+
+			mockMvc.perform(post("/medical-notes")
+							.contentType("application/json")
+							.content(asJsonString(newMedicalNote)))
+					.andExpect(status().isCreated());
+
+			verify(medicalNoteService, times(1)).create(eq(newMedicalNote));
+			verifyNoMoreInteractions(medicalNoteService);
+		}
+
 	}
 
 	private MedicalNoteDto createMedicalNoteDto(String id, Integer patId, String patient, String note) {
