@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface MedicalNoteService {
 	List<MedicalNoteDto> getMedicalNotesByPatientId(Integer patientId);
+
+	MedicalNoteDto create(MedicalNoteDto medicalNoteDto);
 }

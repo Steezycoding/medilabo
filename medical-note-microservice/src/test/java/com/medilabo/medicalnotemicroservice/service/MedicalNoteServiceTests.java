@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("MedicalNote Test Suite")
+@DisplayName("MedicalNoteService Test Suite")
 class MedicalNoteServiceTests {
 	@Mock
 	private MedicalNoteRepository medicalNoteRepository;
@@ -47,6 +47,33 @@ class MedicalNoteServiceTests {
 			assertThat(result.get(1).getId()).isEqualTo("c789d012");
 
 			verify(medicalNoteRepository).getMedicalNotesByPatId(eq(1));
+			verifyNoMoreInteractions(medicalNoteRepository);
+		}
+	}
+
+	@Nested
+	@DisplayName("create() Tests")
+	class CreateTests {
+		@Test
+		@DisplayName("Should create and return new medical note")
+		public void givenMedicalNoteDto_whenCreate_thenReturnCreatedMedicalNoteDto() {
+			MedicalNoteDto newMedicalNote = MedicalNoteDto.builder()
+					.patId(1)
+					.patient("JohnDoe")
+					.note("Initial consultation.")
+					.build();
+			MedicalNote createdMedicalNote = new MedicalNote("e345f678", 1, "JohnDoe", "Initial consultation.");
+
+			when(medicalNoteRepository.save(any(MedicalNote.class))).thenReturn(createdMedicalNote);
+
+			MedicalNoteDto result = medicalNoteService.create(newMedicalNote);
+
+			assertThat(result.getId()).isEqualTo("e345f678");
+			assertThat(result.getPatId()).isEqualTo(1);
+			assertThat(result.getPatient()).isEqualTo("JohnDoe");
+			assertThat(result.getNote()).isEqualTo("Initial consultation.");
+
+			verify(medicalNoteRepository).save(any(MedicalNote.class));
 			verifyNoMoreInteractions(medicalNoteRepository);
 		}
 	}

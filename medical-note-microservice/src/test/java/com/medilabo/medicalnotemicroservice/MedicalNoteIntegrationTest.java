@@ -1,5 +1,6 @@
 package com.medilabo.medicalnotemicroservice;
 
+import com.medilabo.medicalnotemicroservice.controller.dto.MedicalNoteDto;
 import com.medilabo.medicalnotemicroservice.utils.MongoTestDataHelper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,9 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static com.medilabo.medicalnotemicroservice.utils.JsonUtils.asJsonString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -54,20 +57,63 @@ public class MedicalNoteIntegrationTest {
 	@DisplayName("ENDPOINT Tests")
 	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 	class MedicalNoteApiIntegrationTests {
+
+		/**
+		 * Test constants from test seed data (data-test.json)
+		 */
+		private static final Integer PATIENT_ID_UNDER_TEST = 2;
+		private static final String PATIENT_NAME_UNDER_TEST = "TestBorderline";
+		private static final String NOTE_1_UNDER_TEST = "Le patient déclare qu'il ressent beaucoup de stress au travail Il se plaint également que son audition est anormale dernièrement";
+		private static final String NOTE_2_UNDER_TEST = "Le patient déclare avoir fait une réaction aux médicaments au cours des 3 derniers mois Il remarque également que son audition continue d'être anormale";
+		private static final String NOTE_NEW_UNDER_TEST = "Le patient signale des douleurs thoraciques occasionnelles et une fatigue accrue ces dernières semaines.";
+
 		@Test
 		@Order(1)
 		@DisplayName("GET /medical-notes/patient/{id} with data should return all medical notes for patient")
 		public void getMedicalNotesByPatientId_shouldReturnOkAndJsonFromDb() throws Exception {
-			mockMvc.perform(get("/medical-notes/patient/{id}", 2))
+			mockMvc.perform(get("/medical-notes/patient/{id}", PATIENT_ID_UNDER_TEST))
 					.andExpect(status().isOk())
 					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 					.andExpect(jsonPath("$.length()").value(2))
-					.andExpect(jsonPath("$[0].patId").value(2))
-					.andExpect(jsonPath("$[0].patient").value("TestBorderline"))
-					.andExpect(jsonPath("$[0].note").value("Le patient déclare qu'il ressent beaucoup de stress au travail Il se plaint également que son audition est anormale dernièrement"))
-					.andExpect(jsonPath("$[1].patId").value(2))
-					.andExpect(jsonPath("$[1].patient").value("TestBorderline"))
-					.andExpect(jsonPath("$[1].note").value("Le patient déclare avoir fait une réaction aux médicaments au cours des 3 derniers mois Il remarque également que son audition continue d'être anormale"));
+					.andExpect(jsonPath("$[0].patId").value(PATIENT_ID_UNDER_TEST))
+					.andExpect(jsonPath("$[0].patient").value(PATIENT_NAME_UNDER_TEST))
+					.andExpect(jsonPath("$[0].note").value(NOTE_1_UNDER_TEST))
+					.andExpect(jsonPath("$[1].patId").value(PATIENT_ID_UNDER_TEST))
+					.andExpect(jsonPath("$[1].patient").value(PATIENT_NAME_UNDER_TEST))
+					.andExpect(jsonPath("$[1].note").value(NOTE_2_UNDER_TEST));
+		}
+
+		@Test
+		@Order(2)
+		@DisplayName("POST /medical-notes with data should create a new medical note")
+		public void createMedicalNote_shouldReturnCreatedAndJsonFromDb() throws Exception {
+			MedicalNoteDto newMedicalNote = MedicalNoteDto.builder()
+					.patId(2)
+					.patient("TestBorderline")
+					.note("Le patient signale des douleurs thoraciques occasionnelles et une fatigue accrue ces dernières semaines.")
+					.build();
+
+			mockMvc.perform(post("/medical-notes")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(asJsonString(newMedicalNote)))
+					.andExpect(status().isCreated())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$.patId").value(PATIENT_ID_UNDER_TEST))
+					.andExpect(jsonPath("$.patient").value(PATIENT_NAME_UNDER_TEST))
+					.andExpect(jsonPath("$.note").value(NOTE_NEW_UNDER_TEST));
+		}
+
+		@Test
+		@Order(3)
+		@DisplayName("GET /medical-notes/patient/{id} should return new medical note for patient")
+		public void getMedicalNotesByPatientId_shouldReturnOkAndNewNoteAdded() throws Exception {
+			mockMvc.perform(get("/medical-notes/patient/{id}", 2))
+					.andExpect(status().isOk())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$.length()").value(3))
+					.andExpect(jsonPath("$[2].patId").value(PATIENT_ID_UNDER_TEST))
+					.andExpect(jsonPath("$[2].patient").value(PATIENT_NAME_UNDER_TEST))
+					.andExpect(jsonPath("$[2].note").value(NOTE_NEW_UNDER_TEST));
 		}
 	}
 }
