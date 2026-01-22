@@ -18,8 +18,7 @@ import java.util.List;
 import static com.medilabo.medicalnotemicroservice.utils.JsonUtils.asJsonString;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -102,7 +101,23 @@ class MedicalNoteControllerTests {
 			verify(medicalNoteService, times(1)).create(eq(newMedicalNote));
 			verifyNoMoreInteractions(medicalNoteService);
 		}
+	}
 
+	@Nested
+	@DisplayName("ENDPOINT '/medical-notes/{id}' Tests")
+	class MedicalNotesIdTests {
+		@Test
+		@DisplayName("DELETE /medical-notes/{id} : Should respond OK & delete the medical note with given id")
+		void getAllMedicalNotesTest() throws Exception {
+			String noteIdToDelete = "e345f678";
+
+			mockMvc.perform(delete("/medical-notes/{id}", noteIdToDelete)
+							.contentType("application/json"))
+					.andExpect(status().isOk());
+
+			verify(medicalNoteService, times(1)).delete(eq(noteIdToDelete));
+			verifyNoMoreInteractions(medicalNoteService);
+		}
 	}
 
 	private MedicalNoteDto createMedicalNoteDto(String id, Integer patId, String patient, String note) {

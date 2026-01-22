@@ -49,4 +49,19 @@ public class MedicalNoteServiceImpl implements MedicalNoteService {
 
 		return createdMedicalNoteDto;
 	}
+
+	/**
+	 * Deletes a medical note by its ID.
+	 *
+	 * @param id The ID of the medical note to be deleted.
+	 *
+	 * @return The ID of the deleted medical note.
+	 */
+	@Override
+	public String delete(String id) {
+		medicalNoteRepository.deleteMedicalNoteById(id);
+		log.info("MedicalNote with ID '{}' has been deleted.", id);
+
+		return id;
+	}
 }

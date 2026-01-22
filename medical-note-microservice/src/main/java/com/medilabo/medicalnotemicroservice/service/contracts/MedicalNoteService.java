@@ -8,4 +8,6 @@ public interface MedicalNoteService {
 	List<MedicalNoteDto> getMedicalNotesByPatientId(Integer patientId);
 
 	MedicalNoteDto create(MedicalNoteDto medicalNoteDto);
+
+	String delete(String id);
 }
