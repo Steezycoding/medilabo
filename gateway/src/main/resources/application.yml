@@ -20,6 +20,12 @@ spring:
                 - Path=api/patients/**
               filters:
                 - StripPrefix=1
+            - id: medical-note-microservice
+              uri: http://localhost:9102
+              predicates:
+                - Path=api/medical-notes/**
+              filters:
+                - StripPrefix=1
 management:
   endpoints:
     web:
