@@ -45,4 +45,12 @@ public class MedicalNoteController {
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(createdNote);
 	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteMedicalNote(@PathVariable String id) {
+		String deletedId = medicalNoteService.delete(id);
+		log.info("Deleted medical note with ID: {}", deletedId);
+
+		return ResponseEntity.status(HttpStatus.OK).body("Deleted medical note with ID: " + deletedId);
+	}
 }

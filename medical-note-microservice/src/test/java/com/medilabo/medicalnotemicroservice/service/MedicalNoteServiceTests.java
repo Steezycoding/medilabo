@@ -73,7 +73,24 @@ class MedicalNoteServiceTests {
 			assertThat(result.getPatient()).isEqualTo("JohnDoe");
 			assertThat(result.getNote()).isEqualTo("Initial consultation.");
 
-			verify(medicalNoteRepository).save(any(MedicalNote.class));
+			verify(medicalNoteRepository).save(eq(newMedicalNote.toEntity()));
+			verifyNoMoreInteractions(medicalNoteRepository);
+		}
+	}
+
+	@Nested
+	@DisplayName("delete() Tests")
+	class DeleteTests {
+		@Test
+		@DisplayName("Should delete note with given id and return the id")
+		public void givenNoteId_whenDelete_thenReturnDeletedNoteId() {
+			String noteIdToDelete = "e345f678";
+
+			String result = medicalNoteService.delete(noteIdToDelete);
+
+			assertThat(result).isEqualTo("e345f678");
+
+			verify(medicalNoteRepository).deleteMedicalNoteById(eq(noteIdToDelete));
 			verifyNoMoreInteractions(medicalNoteRepository);
 		}
 	}
