@@ -30,18 +30,19 @@ describe('PatientNotes', () => {
   });
 
   function setPatientIdAndTrigger(id: number | null) {
+    const newValue = id === null ? null : String(id);
     const change = new SimpleChange(component.patientId, id, true);
-    component.patientId = String(id);
+    component.patientId = newValue;
     component.ngOnChanges({ patientId: change });
     fixture.detectChanges();
   }
 
-  it('should create', () => {
+  it('should create PatientNotes component', () => {
     expect(component).toBeTruthy();
   });
 
   it('should clear notes and not call service when patientId is null', () => {
-    component.notes = [{ id: 'n1', note: 'temp' } as any];
+    component.notes = mockNotes;
     setPatientIdAndTrigger(null);
 
     expect(notesServiceSpy.getPatientNotes).not.toHaveBeenCalled();

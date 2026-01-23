@@ -17,9 +17,9 @@ export class MedicalNotesService {
       map(items => items.map(item => ({
         id: item.id,
         patId: item.patId,
-        patientName: item.patient ?? item.patientName ?? '',
-        content: item.note ?? item.content ?? '',
-        createdAt: item.createdAt ?? ''
+        patientName: item.patient ?? item.patientName,
+        content: item.note ?? item.content,
+        createdAt: item.createdAt
       } as MedicalNote))),
       catchError (err => {
         console.error("Error fetching medical notes", err);
