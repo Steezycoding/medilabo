@@ -1,0 +1,39 @@
+<div class="patient-notes">
+  <div class="d-flex align-items-center mb-3">
+    <h4 class="m-0">Notes</h4>
+    <button class="btn btn-sm btn-primary ms-auto">
+      <i class="bi bi-plus-lg"></i>&nbsp;Ajouter une note
+    </button>
+  </div>
+
+  @if (notes && notes.length) {
+    <ul class="list-group">
+      @for (note of notes; track note.createdAt) {
+        <li class="list-group-item">
+          <div class="d-flex align-items-start">
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start">
+                <small class="text-muted">{{ note.createdAt }}</small>
+                <div class="ms-2">
+                  <button class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-2">
+                <p class="mb-1">
+                  {{ note.content }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <div class="alert alert-info" role="alert">
+      Aucune note disponible pour ce patient.
+    </div>
+  }
+</div>
