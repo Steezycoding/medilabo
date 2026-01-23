@@ -4,6 +4,8 @@ import {PatientService} from '../../../services/patient.service';
 import {ActivatedRoute, convertToParamMap} from '@angular/router';
 import {Patient} from '../../../model/Patient';
 import {of, throwError} from 'rxjs';
+import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
 describe('PatientDetails', () => {
   let component: PatientDetailsComponent;
@@ -41,6 +43,7 @@ describe('PatientDetails', () => {
     await TestBed.configureTestingModule({
       imports: [PatientDetailsComponent],
       providers: [
+        provideHttpClient(), provideHttpClientTesting(),
         { provide: PatientService, useValue: patientServiceSpy },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({}) } } }
       ]
