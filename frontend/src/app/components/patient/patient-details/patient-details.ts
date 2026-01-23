@@ -3,13 +3,13 @@ import {FormsModule} from '@angular/forms';
 import {Patient} from '../../../model/Patient';
 import {PatientService} from '../../../services/patient.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {PatientNotes} from '../patient-notes/patient-notes';
+import {PatientNotesComponent} from '../patient-notes/patient-notes';
 
 @Component({
   selector: 'app-patient-details',
   imports: [
     FormsModule,
-    PatientNotes
+    PatientNotesComponent
   ],
   templateUrl: './patient-details.html',
   styleUrl: './patient-details.scss',

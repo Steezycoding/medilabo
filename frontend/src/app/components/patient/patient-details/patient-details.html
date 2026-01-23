@@ -22,63 +22,73 @@
       <div class="mt-2">Data loading...</div>
     </div>
   } @else {
+    <div class="row">
     @if (errorFetching) {
       <div class="alert alert-danger" role="alert">
         {{ errorMessage }}
       </div>
     } @else {
-      <form #patientForm="ngForm" (ngSubmit)="onSubmitPatientForm()">
-        <div class="mb-3 row">
-          <label for="firstName" class="col-sm-2 col-col-sm-2 col-form-label">First Name</label>
-          <div class="col-sm-10">
-            <input type="text" id="firstName" [class]="isEditMode ? 'form-control' : 'form-control-plaintext'" [(ngModel)]="patient.firstName" name="firstName" [readonly]="!isEditMode" required>
+      <div class="col-6">
+        <div class="card">
+          <div class="card-body">
+            <form #patientForm="ngForm" (ngSubmit)="onSubmitPatientForm()">
+              <div class="mb-3 row">
+                <label for="firstName" class="col-sm-3 col-form-label">First Name</label>
+                <div class="col-sm-9">
+                  <input type="text" id="firstName" [class]="isEditMode ? 'form-control' : 'form-control-plaintext'" [(ngModel)]="patient.firstName" name="firstName" [readonly]="!isEditMode" required>
+                </div>
+              </div>
+              <div class="mb-3 row">
+                <label for="lastName" class="col-sm-3 col-form-label">Last Name</label>
+                <div class="col-sm-9">
+                  <input type="text" id="lastName" [class]="isEditMode ? 'form-control' : 'form-control-plaintext'" [(ngModel)]="patient.lastName" name="lastName" [readonly]="!isEditMode" required>
+                </div>
+              </div>
+              <div class="mb-3 row">
+                <label for="birthDate" class="col-sm-3 col-form-label">Date of Birth</label>
+                <div class="col-sm-9">
+                  <input type="date" id="birthDate" [class]="isEditMode ? 'form-control' : 'form-control-plaintext'" [(ngModel)]="patient.birthDate" name="birthDate" [readonly]="!isEditMode" required>
+                </div>
+              </div>
+              <div class="mb-3 row">
+                <label for="gender" class="col-sm-3 col-form-label">Gender</label>
+                <div class="col-sm-9">
+                  @if (!isEditMode) {
+                    <input type="text" id="gender" class="form-control-plaintext" [value]="plainTextGender(patient.gender)" name="gender" readonly>
+                  } @else {
+                    <select id="gender" class="form-select" [(ngModel)]="patient.gender" name="gender" required>
+                      <option value="" disabled>Select Gender</option>
+                      <option value="M">Male</option>
+                      <option value="F">Female</option>
+                    </select>
+                  }
+                </div>
+              </div>
+              <div class="mb-3 row">
+                <label for="phoneNumber" class="col-sm-3 col-form-label">Phone Number</label>
+                <div class="col-sm-9">
+                  <input type="tel" id="phoneNumber" [class]="isEditMode ? 'form-control' : 'form-control-plaintext'" [(ngModel)]="patient.phoneNumber" name="phoneNumber" [readonly]="!isEditMode">
+                </div>
+              </div>
+              <div class="mb-3 row">
+                <label for="address" class="col-sm-3 col-form-label">Address</label>
+                <div class="col-sm-9">
+                  <input id="address" [class]="isEditMode ? 'form-control' : 'form-control-plaintext'" [(ngModel)]="patient.address" name="address" [readonly]="!isEditMode">
+                </div>
+              </div>
+              @if (isEditMode) {
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <button type="submit" class="btn btn-primary" [disabled]="!patientForm.form.valid">{{ patientId ? 'Update patient' : 'Add new patient' }}</button>
+                </div>
+              }
+            </form>
           </div>
         </div>
-        <div class="mb-3 row">
-          <label for="lastName" class="col-sm-2 col-col-sm-2 col-form-label">Last Name</label>
-          <div class="col-sm-10">
-            <input type="text" id="lastName" [class]="isEditMode ? 'form-control' : 'form-control-plaintext'" [(ngModel)]="patient.lastName" name="lastName" [readonly]="!isEditMode" required>
-          </div>
-        </div>
-        <div class="mb-3 row">
-          <label for="birthDate" class="col-sm-2 col-form-label">Date of Birth</label>
-          <div class="col-sm-10">
-            <input type="date" id="birthDate" [class]="isEditMode ? 'form-control' : 'form-control-plaintext'" [(ngModel)]="patient.birthDate" name="birthDate" [readonly]="!isEditMode" required>
-          </div>
-        </div>
-        <div class="mb-3 row">
-          <label for="gender" class="col-sm-2 col-form-label">Gender</label>
-          <div class="col-sm-10">
-            @if (!isEditMode) {
-              <input type="text" id="gender" class="form-control-plaintext" [value]="plainTextGender(patient.gender)" name="gender" readonly>
-            } @else {
-              <select id="gender" class="form-select" [(ngModel)]="patient.gender" name="gender" required>
-                <option value="" disabled>Select Gender</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
-              </select>
-            }
-          </div>
-        </div>
-        <div class="mb-3 row">
-          <label for="phoneNumber" class="col-sm-2 col-form-label">Phone Number</label>
-          <div class="col-sm-10">
-            <input type="tel" id="phoneNumber" [class]="isEditMode ? 'form-control' : 'form-control-plaintext'" [(ngModel)]="patient.phoneNumber" name="phoneNumber" [readonly]="!isEditMode">
-          </div>
-        </div>
-        <div class="mb-3 row">
-          <label for="address" class="col-sm-2 col-form-label">Address</label>
-          <div class="col-sm-10">
-            <input id="address" [class]="isEditMode ? 'form-control' : 'form-control-plaintext'" [(ngModel)]="patient.address" name="address" [readonly]="!isEditMode">
-          </div>
-        </div>
-        @if (isEditMode) {
-          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button type="submit" class="btn btn-primary" [disabled]="!patientForm.form.valid">{{ patientId ? 'Update patient' : 'Add new patient' }}</button>
-          </div>
-        }
-      </form>
+      </div>
     }
-    <app-patient-notes></app-patient-notes>
+    <div class="col-6">
+      <app-patient-notes [patientId]="patientId"></app-patient-notes>
+    </div>
+  </div>
   }
 </div>
