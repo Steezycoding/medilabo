@@ -69,6 +69,7 @@ public class MedicalNoteIntegrationTest {
 		private static final String NOTE_NEW_UNDER_TEST = "Le patient signale des douleurs thoraciques occasionnelles et une fatigue accrue ces dernières semaines.";
 
 		private static String newNoteId;
+		private static String newNoteDate;
 
 		@Test
 		@Order(1)
@@ -107,9 +108,10 @@ public class MedicalNoteIntegrationTest {
 					.andExpect(jsonPath("$.note").value(NOTE_NEW_UNDER_TEST))
 					.andReturn();
 
-			// Get the ID of the created note for deletion in later test
+			// Get the ID and date of the created note for comparison/deletion in later test
 			String responseJson = mvcResult.getResponse().getContentAsString();
 			newNoteId = JsonPath.read(responseJson, "$.id");
+			newNoteDate = JsonPath.read(responseJson, "$.createdAt");
 		}
 
 		@Test
@@ -123,7 +125,8 @@ public class MedicalNoteIntegrationTest {
 					.andExpect(jsonPath("$[2].id").value(newNoteId))
 					.andExpect(jsonPath("$[2].patId").value(PATIENT_ID_UNDER_TEST))
 					.andExpect(jsonPath("$[2].patient").value(PATIENT_NAME_UNDER_TEST))
-					.andExpect(jsonPath("$[2].note").value(NOTE_NEW_UNDER_TEST));
+					.andExpect(jsonPath("$[2].note").value(NOTE_NEW_UNDER_TEST))
+					.andExpect(jsonPath("$[2].createdAt").value(newNoteDate));
 		}
 
 		@Test

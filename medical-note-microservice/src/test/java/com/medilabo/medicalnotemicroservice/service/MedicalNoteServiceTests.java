@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,8 +35,8 @@ class MedicalNoteServiceTests {
 		@DisplayName("Should return medical notes for given patient ID")
 		public void givenPatientId_whenGetMedicalNotesByPatientId_thenReturnMedicalNotes() {
 			List<MedicalNote> medicalNotes = List.of(
-					new MedicalNote("a123b456", 1, "JohnDoe", "Prescribed new medication."),
-					new MedicalNote("c789d012", 1, "JohnDoe", "Patient shows signs of improvement.")
+					new MedicalNote("a123b456", 1, "JohnDoe", "Prescribed new medication.", new Date()),
+					new MedicalNote("c789d012", 1, "JohnDoe", "Patient shows signs of improvement.", new Date())
 			);
 
 			when(medicalNoteRepository.getMedicalNotesByPatId(anyInt())).thenReturn(medicalNotes);
@@ -57,12 +58,13 @@ class MedicalNoteServiceTests {
 		@Test
 		@DisplayName("Should create and return new medical note")
 		public void givenMedicalNoteDto_whenCreate_thenReturnCreatedMedicalNoteDto() {
+			Date now = new Date();
 			MedicalNoteDto newMedicalNote = MedicalNoteDto.builder()
 					.patId(1)
 					.patient("JohnDoe")
 					.note("Initial consultation.")
 					.build();
-			MedicalNote createdMedicalNote = new MedicalNote("e345f678", 1, "JohnDoe", "Initial consultation.");
+			MedicalNote createdMedicalNote = new MedicalNote("e345f678", 1, "JohnDoe", "Initial consultation.", now);
 
 			when(medicalNoteRepository.save(any(MedicalNote.class))).thenReturn(createdMedicalNote);
 
@@ -72,6 +74,7 @@ class MedicalNoteServiceTests {
 			assertThat(result.getPatId()).isEqualTo(1);
 			assertThat(result.getPatient()).isEqualTo("JohnDoe");
 			assertThat(result.getNote()).isEqualTo("Initial consultation.");
+			assertThat(result.getCreatedAt()).isEqualTo(now);
 
 			verify(medicalNoteRepository).save(eq(newMedicalNote.toEntity()));
 			verifyNoMoreInteractions(medicalNoteRepository);

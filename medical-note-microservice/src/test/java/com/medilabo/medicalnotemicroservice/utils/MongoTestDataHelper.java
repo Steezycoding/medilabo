@@ -7,6 +7,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.io.InputStream;
+import java.time.Instant;
+import java.util.Date;
 
 public class MongoTestDataHelper {
 	private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -26,6 +28,18 @@ public class MongoTestDataHelper {
 				if (root.isArray()) {
 					for (JsonNode node : root) {
 						Document doc = Document.parse(node.toString());
+						// Convert createdAt ISO-8601 string to java.util.Date so MongoDB stores it as BSON Date
+						if (doc.containsKey("createdAt")) {
+							Object createdAtValue = doc.get("createdAt");
+							if (createdAtValue instanceof String) {
+								try {
+									Instant instant = Instant.parse((String) createdAtValue);
+									doc.put("createdAt", Date.from(instant));
+								} catch (Exception e) {
+									// If parsing fails, leave the original value (won't block other tests)
+								}
+							}
+						}
 						mongoTemplate.insert(doc, "notes");
 					}
 				}
