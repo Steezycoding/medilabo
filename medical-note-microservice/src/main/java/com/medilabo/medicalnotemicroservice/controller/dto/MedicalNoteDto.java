@@ -4,6 +4,8 @@ import com.medilabo.medicalnotemicroservice.domain.MedicalNote;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @Builder
 public class MedicalNoteDto {
@@ -11,6 +13,7 @@ public class MedicalNoteDto {
 	private Integer patId;
 	private String patient;
 	private String note;
+	private Date createdAt;
 
 	public static MedicalNoteDto fromEntity(MedicalNote note) {
 		return MedicalNoteDto.builder()
@@ -18,6 +21,7 @@ public class MedicalNoteDto {
 				.patId(note.getPatId())
 				.patient(note.getPatient())
 				.note(note.getNote())
+				.createdAt(note.getCreatedAt())
 				.build();
 	}
 
@@ -27,6 +31,7 @@ public class MedicalNoteDto {
 				.patId(this.patId)
 				.patient(this.patient)
 				.note(this.note)
+				.createdAt(this.createdAt)
 				.build();
 	}
 }

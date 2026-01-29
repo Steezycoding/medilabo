@@ -7,6 +7,7 @@ import com.medilabo.medicalnotemicroservice.service.contracts.MedicalNoteService
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -42,6 +43,7 @@ public class MedicalNoteServiceImpl implements MedicalNoteService {
 	 */
 	@Override
 	public MedicalNoteDto create(MedicalNoteDto medicalNoteDto) {
+		medicalNoteDto.setCreatedAt(new Date());
 		MedicalNote createdMedicalNoteEntity = medicalNoteRepository.save(medicalNoteDto.toEntity());
 
 		MedicalNoteDto createdMedicalNoteDto = MedicalNoteDto.fromEntity(createdMedicalNoteEntity);
