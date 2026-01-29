@@ -73,4 +73,32 @@ describe('PatientNotes', () => {
     expect(component.loading).toBeFalse();
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load patient notes', err);
   });
+
+  it('should delete note and update notes list', () => {
+    notesServiceSpy.getPatientNotes.and.returnValue(of(mockNotes));
+    setPatientIdAndTrigger(2);
+
+    notesServiceSpy.deleteNoteById = jasmine.createSpy().and.returnValue(of(undefined));
+
+    component.deleteNote('a123b456');
+
+    expect(notesServiceSpy.deleteNoteById).toHaveBeenCalledWith('a123b456');
+    expect(component.notes.length).toBe(1);
+    expect(component.notes.find(n => n.id === 'a123b456')).toBeUndefined();
+  });
+
+  it('should log error when delete note fails', () => {
+    notesServiceSpy.getPatientNotes.and.returnValue(of(mockNotes));
+    setPatientIdAndTrigger(2);
+
+    const err = new Error('Delete failed');
+    notesServiceSpy.deleteNoteById = jasmine.createSpy().and.returnValue(throwError(() => err));
+    const consoleErrorSpy = spyOn(console, 'error');
+
+    component.deleteNote('a123b456');
+
+    expect(notesServiceSpy.deleteNoteById).toHaveBeenCalledWith('a123b456');
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to delete note', err);
+    expect(component.notes.length).toBe(2); // Notes list should remain unchanged
+  });
 });

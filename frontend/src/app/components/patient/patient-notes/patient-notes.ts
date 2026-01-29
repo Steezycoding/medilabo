@@ -47,4 +47,15 @@ export class PatientNotesComponent {
       }
     });
   }
+
+  public deleteNote(noteId: string): void {
+    this.notesService.deleteNoteById(noteId).subscribe({
+      next: () => {
+        this.notes = this.notes.filter(n => String(n.id) !== String(noteId));
+      },
+      error: (err: any) => {
+        console.error('Failed to delete note', err);
+      }
+    });
+  }
 }

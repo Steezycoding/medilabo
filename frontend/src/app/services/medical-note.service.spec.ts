@@ -64,4 +64,38 @@ describe('MedicalNotesService', () => {
     const req = httpMock.expectOne(`${apiMedicalNoteBase}/patient/${patientId}`);
     req.flush({ message: 'fail' }, { status: 500, statusText: 'Server Error' });
   });
+
+  it('deleteNoteById should request DELETE and complete', (done: DoneFn) => {
+    const noteId = 'a123b456';
+
+    service.deleteNoteById(noteId).subscribe({
+      next: res => {
+        expect(res).toBeUndefined();
+        done();
+      },
+      error: err => { fail(err); done(); }
+    });
+
+    const req = httpMock.expectOne(`${apiMedicalNoteBase}/${noteId}`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush('');
+  });
+
+  it('deleteNoteById should log error and propagate when backend fails', (done: DoneFn) => {
+    spyOn(console, 'error');
+
+    const noteId = 'nonexistent';
+
+    service.deleteNoteById(noteId).subscribe({
+      next: () => { fail('expected error'); done(); },
+      error: err => {
+        expect(console.error).toHaveBeenCalledWith('Error deleting medical note', jasmine.anything());
+        expect(err).toBeTruthy();
+        done();
+      }
+    });
+
+    const req = httpMock.expectOne(`${apiMedicalNoteBase}/${noteId}`);
+    req.flush({ message: 'fail' }, { status: 404, statusText: 'Not Found' });
+  });
 });

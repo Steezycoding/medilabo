@@ -27,4 +27,14 @@ export class MedicalNotesService {
       })
     );
   }
+
+  deleteNoteById(noteId: string): Observable<void> {
+    return this.http.delete(this.apiMedicalNoteUrl + `/${noteId}`, { responseType: 'text' }).pipe(
+      map(() => undefined),
+      catchError(err => {
+        console.error("Error deleting medical note", err);
+        throw err;
+      })
+    );
+  }
 }
