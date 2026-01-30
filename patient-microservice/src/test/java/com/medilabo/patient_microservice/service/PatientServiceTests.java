@@ -71,8 +71,8 @@ public class PatientServiceTests {
 			PatientDto result = patientService.getById(2L);
 
 			assertThat(result).isNotNull();
-			assertThat(result.getId()).isNull();
-			assertThat(result).isEqualTo(PatientDto.fromEntity(patient));
+			assertThat(result.getId()).isEqualTo(2L);
+			assertThat(result).isEqualTo(PatientDto.fromEntityWithId(patient));
 
 			verify(patientRepository).findById(eq(2L));
 			verifyNoMoreInteractions(patientRepository);
