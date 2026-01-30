@@ -1,41 +1,43 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {SimpleChange} from '@angular/core';
 import {of, throwError} from 'rxjs';
 
 import {PatientNotesComponent} from './patient-notes';
 import {MedicalNotesService} from '../../../services/medical-note.service';
 import {MedicalNote} from '../../../model/MedicalNote';
+import {Patient} from '../../../model/Patient';
 
 describe('PatientNotes', () => {
-  let component: PatientNotesComponent;
   let fixture: ComponentFixture<PatientNotesComponent>;
+  let component: PatientNotesComponent;
   let notesServiceSpy: jasmine.SpyObj<MedicalNotesService>;
+
+  const mockPatient = {
+    id: '2',
+    firstName: 'John',
+    lastName: 'Doe',
+    birthDate: '1990-06-24',
+    gender: 'M',
+    address: '2 High St',
+    phoneNumber: '200-333-4444'
+  } as Patient;
 
   const mockNotes = [
     { id: 'a123b456', patId: 2, content: 'Note 1 content', createdAt: '2020-01-01' },
     { id: 'c789d012', patId: 2, content: 'Note 2 content', createdAt: '2020-02-01' }
   ] as MedicalNote[];
 
-  beforeEach(async () => {
-    notesServiceSpy = jasmine.createSpyObj('MedicalNotesService', ['getPatientNotes']);
+  beforeEach(() => {
+    notesServiceSpy = jasmine.createSpyObj('MedicalNotesService', ['getPatientNotes', 'deleteNoteById']);
+    notesServiceSpy.getPatientNotes.and.returnValue(of([]));
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [PatientNotesComponent],
       providers: [{ provide: MedicalNotesService, useValue: notesServiceSpy }]
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(PatientNotesComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
-
-  function setPatientIdAndTrigger(id: number | null) {
-    const newValue = id === null ? null : String(id);
-    const change = new SimpleChange(component.patientId, id, true);
-    component.patientId = newValue;
-    component.ngOnChanges({ patientId: change });
-    fixture.detectChanges();
-  }
 
   it('should create PatientNotes component', () => {
     expect(component).toBeTruthy();
@@ -43,7 +45,8 @@ describe('PatientNotes', () => {
 
   it('should clear notes and not call service when patientId is null', () => {
     component.notes = mockNotes;
-    setPatientIdAndTrigger(null);
+
+    fixture.detectChanges();
 
     expect(notesServiceSpy.getPatientNotes).not.toHaveBeenCalled();
     expect(component.notes).toEqual([]);
@@ -51,9 +54,10 @@ describe('PatientNotes', () => {
   });
 
   it('should load notes when patientId is provided', () => {
+    component.patient = mockPatient;
     notesServiceSpy.getPatientNotes.and.returnValue(of(mockNotes));
 
-    setPatientIdAndTrigger(2);
+    fixture.detectChanges();
 
     expect(notesServiceSpy.getPatientNotes).toHaveBeenCalledWith(2);
     expect(component.notes).toEqual(mockNotes);
@@ -62,11 +66,12 @@ describe('PatientNotes', () => {
   });
 
   it('should set error true and log when notes loading fails', () => {
+    component.patient = mockPatient;
     const err = new Error('Load failed');
     notesServiceSpy.getPatientNotes.and.returnValue(throwError(() => err));
     const consoleErrorSpy = spyOn(console, 'error');
 
-    setPatientIdAndTrigger(2);
+    fixture.detectChanges();
 
     expect(notesServiceSpy.getPatientNotes).toHaveBeenCalledWith(2);
     expect(component.error).toBeTrue();
@@ -75,12 +80,14 @@ describe('PatientNotes', () => {
   });
 
   it('should delete note and update notes list', () => {
+    component.patient = mockPatient;
     notesServiceSpy.getPatientNotes.and.returnValue(of(mockNotes));
-    setPatientIdAndTrigger(2);
 
     notesServiceSpy.deleteNoteById = jasmine.createSpy().and.returnValue(of(undefined));
 
     component.deleteNote('a123b456');
+
+    fixture.detectChanges();
 
     expect(notesServiceSpy.deleteNoteById).toHaveBeenCalledWith('a123b456');
     expect(component.notes.length).toBe(1);
@@ -88,8 +95,8 @@ describe('PatientNotes', () => {
   });
 
   it('should log error when delete note fails', () => {
+    component.patient = mockPatient;
     notesServiceSpy.getPatientNotes.and.returnValue(of(mockNotes));
-    setPatientIdAndTrigger(2);
 
     const err = new Error('Delete failed');
     notesServiceSpy.deleteNoteById = jasmine.createSpy().and.returnValue(throwError(() => err));
@@ -97,8 +104,10 @@ describe('PatientNotes', () => {
 
     component.deleteNote('a123b456');
 
+    fixture.detectChanges();
+
     expect(notesServiceSpy.deleteNoteById).toHaveBeenCalledWith('a123b456');
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to delete note', err);
-    expect(component.notes.length).toBe(2); // Notes list should remain unchanged
+    expect(component.notes.length).toBe(2);
   });
 });
