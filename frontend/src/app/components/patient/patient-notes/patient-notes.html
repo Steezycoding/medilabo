@@ -40,7 +40,7 @@
   <div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true" #addNoteModalEl>
     <div class="modal-dialog">
       <div class="modal-content">
-        <form #form="ngForm" (ngSubmit)="createNote(form)">
+        <form id="noteForm" #noteForm="ngForm" (ngSubmit)="createNote(noteForm)">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="addNoteModalLabel">New note for <em>{{ patient?.firstName}} {{ patient?.lastName}}</em></h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -52,8 +52,8 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" (click)="resetForm(form)">Cancel</button>
-            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Add note</button>
+            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" (click)="resetForm(noteForm)">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="noteForm.invalid">Add note</button>
           </div>
         </form>
       </div>

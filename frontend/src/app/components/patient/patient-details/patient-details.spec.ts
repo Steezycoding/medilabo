@@ -71,14 +71,14 @@ describe('PatientDetails', () => {
     const title = fixture.nativeElement.querySelector('h2') as HTMLHeadingElement;
     const editBtn = fixture.nativeElement.querySelector('button#editToggle.btn.btn-primary') as HTMLButtonElement;
     const closeEditBtn = fixture.nativeElement.querySelector('button#editToggle.btn-outline-danger') as HTMLButtonElement;
-    const submitBtn = fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const submitBtn = fixture.nativeElement.querySelector('#patientForm button[type="submit"]') as HTMLButtonElement | null;
 
     expect(component.patientId).toBe(patientId);
     expect(component.isEditMode).toBeFalse();
     expect(title.textContent?.trim()).toBe('Patient');
     expect(editBtn).toBeTruthy();
     expect(closeEditBtn).toBeNull();
-    expect(submitBtn).toBeFalsy();
+    expect(submitBtn).toBeNull();
   });
 
   it('should switch to "edit" mode when in "view" mode and "editToggle" button is clicked', async () => {
@@ -96,7 +96,7 @@ describe('PatientDetails', () => {
 
     const title = fixture.nativeElement.querySelector('h2') as HTMLHeadingElement;
     const closeEditBtn = fixture.nativeElement.querySelector('button#editToggle.btn-outline-danger') as HTMLButtonElement;
-    const submitBtn = fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const submitBtn = fixture.nativeElement.querySelector('#patientForm button[type="submit"]') as HTMLButtonElement;
 
     expect(component.isEditMode).toBeTrue();
     expect(title.textContent?.trim()).toBe('Patient (edit)');
@@ -124,7 +124,7 @@ describe('PatientDetails', () => {
     fixture.detectChanges();
 
     const title = fixture.nativeElement.querySelector('h2') as HTMLHeadingElement;
-    const submitBtn = fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const submitBtn = fixture.nativeElement.querySelector('#patientForm button[type="submit"]') as HTMLButtonElement;
     const editBtn = fixture.nativeElement.querySelector('button#editToggle.btn-primary') as HTMLButtonElement;
 
     expect(component.isEditMode).toBeFalse();
@@ -212,7 +212,7 @@ describe('PatientDetails', () => {
     const title = fixture.nativeElement.querySelector('h2') as HTMLHeadingElement;
     expect(title.textContent?.trim()).toBe('New Patient');
 
-    const submitBtn = fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const submitBtn = fixture.nativeElement.querySelector('#patientForm button[type="submit"]') as HTMLButtonElement;
     expect(submitBtn).toBeTruthy();
     expect(submitBtn.textContent?.trim()).toBe('Add new patient');
 
