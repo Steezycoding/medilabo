@@ -83,11 +83,11 @@ describe('PatientNotes', () => {
     component.patient = mockPatient;
     notesServiceSpy.getPatientNotes.and.returnValue(of(mockNotes));
 
+    fixture.detectChanges();
+
     notesServiceSpy.deleteNoteById = jasmine.createSpy().and.returnValue(of(undefined));
 
     component.deleteNote('a123b456');
-
-    fixture.detectChanges();
 
     expect(notesServiceSpy.deleteNoteById).toHaveBeenCalledWith('a123b456');
     expect(component.notes.length).toBe(1);
