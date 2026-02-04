@@ -26,6 +26,12 @@ spring:
                 - Path=api/medical-notes/**
               filters:
                 - StripPrefix=1
+            - id: risk-evaluator-microservice
+              uri: http://localhost:9103
+              predicates:
+                - Path=api/risk-evaluator/**
+              filters:
+                - StripPrefix=1
 management:
   endpoints:
     web:
