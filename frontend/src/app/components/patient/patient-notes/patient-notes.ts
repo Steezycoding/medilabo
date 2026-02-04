@@ -41,6 +41,8 @@ export class PatientNotesComponent implements OnInit {
     this.loading = true;
     this.error = false;
 
+    console.log(`Loading notes for patient ID: ${this.patientId}`);
+
     this.notesService.getPatientNotes(this.patientId).subscribe({
       next: (data: any[]) => {
         this.notes = data;
@@ -60,21 +62,25 @@ export class PatientNotesComponent implements OnInit {
     }
 
     const content = this.newNoteContent.trim();
-    if (!content) {
+    if (content.length === 0) {
       return;
     }
+
     const patientLastName = this.patient?.lastName || '';
+
+    console.log(`Creating note for patient ID: ${this.patientId} | patientLastName: ${patientLastName} | content: ${content}`);
 
     this.notesService.createNote(this.patientId, patientLastName, content).subscribe({
       next: (newNote: MedicalNote) => {
         this.notes.unshift(newNote);
-        this.loadNotes();
-        this.resetForm(form);
       },
       error: (err: any) => {
         console.error('Failed to create note', err);
       }
     });
+
+    this.loadNotes();
+    this.resetForm(form);
   }
 
   public deleteNote(noteId: string): void {

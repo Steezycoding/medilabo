@@ -1,7 +1,7 @@
 export interface MedicalNote {
   id: string;
   patId: number;
-  patientName: string;
+  patName: string;
   content: string;
   createdAt: string;
 }

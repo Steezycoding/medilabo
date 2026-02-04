@@ -21,13 +21,24 @@ describe('PatientNotes', () => {
     phoneNumber: '200-333-4444'
   } as Patient;
 
+  const mockNewNote = {
+    id: 'e345f678',
+    patId: 2,
+    content: 'New note content',
+    createdAt: '2020-03-01'
+  } as MedicalNote;
+
   const mockNotes = [
     { id: 'a123b456', patId: 2, content: 'Note 1 content', createdAt: '2020-01-01' },
     { id: 'c789d012', patId: 2, content: 'Note 2 content', createdAt: '2020-02-01' }
   ] as MedicalNote[];
 
   beforeEach(() => {
-    notesServiceSpy = jasmine.createSpyObj('MedicalNotesService', ['getPatientNotes', 'deleteNoteById']);
+    notesServiceSpy = jasmine.createSpyObj('MedicalNotesService', [
+      'getPatientNotes',
+      'deleteNoteById',
+      'createNote'
+    ]);
     notesServiceSpy.getPatientNotes.and.returnValue(of([]));
 
     TestBed.configureTestingModule({
@@ -108,6 +119,94 @@ describe('PatientNotes', () => {
 
     expect(notesServiceSpy.deleteNoteById).toHaveBeenCalledWith('a123b456');
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to delete note', err);
+    expect(component.notes.length).toBe(2);
+  });
+
+  it('should create a note if form is valid', () => {
+    component.patient = mockPatient;
+    fixture.detectChanges();
+
+    notesServiceSpy.createNote.and.returnValue(of(mockNewNote));
+    notesServiceSpy.getPatientNotes.and.returnValue(of([mockNewNote, ...mockNotes]));
+
+    const mockForm = {
+      invalid: false,
+      resetForm: jasmine.createSpy('resetForm')
+    } as any;
+
+    component.newNoteContent = 'New note content';
+
+    component.createNote(mockForm);
+
+    fixture.detectChanges();
+
+    expect(notesServiceSpy.createNote).toHaveBeenCalledWith(2, 'Doe', 'New note content');
+    expect(notesServiceSpy.getPatientNotes).toHaveBeenCalledWith(2);
+    expect(component.notes[0]).toEqual(mockNewNote);
+    expect(mockForm.resetForm).toHaveBeenCalled();
+  });
+
+  it('should not create a note if form is invalid', () => {
+    component.patient = mockPatient;
+    fixture.detectChanges();
+
+    const mockForm = {
+      invalid: true,
+      resetForm: jasmine.createSpy('resetForm')
+    } as any;
+
+    component.createNote(mockForm);
+
+    fixture.detectChanges();
+
+    expect(notesServiceSpy.createNote).not.toHaveBeenCalled();
+    expect(notesServiceSpy.getPatientNotes).toHaveBeenCalledOnceWith(2);
+    expect(mockForm.resetForm).not.toHaveBeenCalled();
+  });
+
+  it('should not create a note if content is empty', () => {
+    component.patient = mockPatient;
+    fixture.detectChanges();
+
+    const mockForm = {
+      invalid: false,
+      resetForm: jasmine.createSpy('resetForm')
+    } as any;
+
+    component.newNoteContent = '';
+
+    component.createNote(mockForm);
+
+    fixture.detectChanges();
+
+    expect(notesServiceSpy.createNote).not.toHaveBeenCalled();
+    expect(notesServiceSpy.getPatientNotes).toHaveBeenCalledOnceWith(2);
+    expect(mockForm.resetForm).not.toHaveBeenCalled();
+  });
+
+  it('should log error when create note fails', () => {
+    component.patient = mockPatient;
+    notesServiceSpy.getPatientNotes.and.returnValue(of(mockNotes));
+
+    fixture.detectChanges();
+
+    const err = new Error('Create failed');
+    notesServiceSpy.createNote = jasmine.createSpy().and.returnValue(throwError(() => err));
+    const consoleErrorSpy = spyOn(console, 'error');
+
+    const mockForm = {
+      invalid: false,
+      resetForm: jasmine.createSpy('resetForm')
+    } as any;
+
+    component.newNoteContent = 'New note content';
+
+    component.createNote(mockForm);
+
+    fixture.detectChanges();
+
+    expect(notesServiceSpy.createNote).toHaveBeenCalledWith(2, 'Doe', 'New note content');
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to create note', err);
     expect(component.notes.length).toBe(2);
   });
 });
