@@ -35,7 +35,7 @@ public class PatientServiceImpl implements PatientService {
 	@Override
 	public PatientDto getById(Long patientId) {
 		return patientRepository.findById(patientId)
-				.map(PatientDto::fromEntity)
+				.map(PatientDto::fromEntityWithId)
 				.orElseThrow(() -> new PatientIdNotFoundException(patientId));
 	}
 
