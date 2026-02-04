@@ -1,0 +1,13 @@
+server:
+  port: 9103
+spring:
+  application:
+    name: risk-evaluator-microservice
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  info:
+    env:
+      enabled: true
