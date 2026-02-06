@@ -7,3 +7,7 @@ spring:
             url: http://localhost:9101
             connectTimeout: 5000
             readTimeout: 5000
+          medical-note-microservice:
+            url: http://localhost:9102
+            connectTimeout: 5000
+            readTimeout: 5000
