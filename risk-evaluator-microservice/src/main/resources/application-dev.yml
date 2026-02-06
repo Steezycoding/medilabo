@@ -1,0 +1,9 @@
+spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          patient-microservice:
+            url: http://localhost:9101
+            connectTimeout: 5000
+            readTimeout: 5000
