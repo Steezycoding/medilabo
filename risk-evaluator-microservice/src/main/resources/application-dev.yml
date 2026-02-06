@@ -11,3 +11,6 @@ spring:
             url: http://localhost:9102
             connectTimeout: 5000
             readTimeout: 5000
+logging:
+  level:
+    com.medilabo: debug
