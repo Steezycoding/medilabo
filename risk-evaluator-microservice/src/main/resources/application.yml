@@ -14,6 +14,10 @@ spring:
             url: ${clients.gateway-microservice.api-url}
             connectTimeout: 5000
             readTimeout: 5000
+          medical-note-microservice:
+            url: ${clients.gateway-microservice.api-url}
+            connectTimeout: 5000
+            readTimeout: 5000
 management:
   endpoints:
     web:

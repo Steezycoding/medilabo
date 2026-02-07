@@ -25,7 +25,7 @@ public class RiskEvaluatorController {
 	@RequestMapping("/patient/{id}")
 	public ResponseEntity<RiskLevelResponse> getPatientMedicalNotesTest(@PathVariable Long id) throws Exception {
 		log.info("GET /risk-evaluator/patient/{}: Evaluating risk for patient ID '{}'", id, id);
-		RiskLevelResponse riskLevel = new RiskLevelResponse(riskEvaluatorService.evaluate(id));
+		RiskLevelResponse riskLevel = new RiskLevelResponse(riskEvaluatorService.getRiskLevel(id));
 		return ResponseEntity.ok(riskLevel);
 	}
 

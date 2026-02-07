@@ -1,12 +1,13 @@
 package com.medilabo.riskevaluatormicroservice.service;
 
-import com.medilabo.riskevaluatormicroservice.beans.PatientBean;
+import com.medilabo.riskevaluatormicroservice.beans.MedicalNoteBean;
 import com.medilabo.riskevaluatormicroservice.domain.enums.RiskLevel;
 import com.medilabo.riskevaluatormicroservice.exception.PatientNotFoundException;
+import com.medilabo.riskevaluatormicroservice.proxies.MedicalNoteMicroserviceProxy;
 import com.medilabo.riskevaluatormicroservice.proxies.PatientMicroserviceProxy;
+import com.medilabo.riskevaluatormicroservice.utils.RiskEvaluatorDataTest;
 import feign.FeignException;
 import feign.Request;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,44 +32,37 @@ public class RiskEvaluatorServiceTests {
 	@Mock
 	private PatientMicroserviceProxy patientProxy;
 
+	@Mock
+	private MedicalNoteMicroserviceProxy medicalNoteProxy;
+
 	@InjectMocks
 	private RiskEvaluatorServiceImpl riskEvaluatorService;
 
-	private Map<Long, RiskLevel> riskPatientLevels;
-
-	@BeforeEach
-	public void setUp() {
-		riskPatientLevels = Map.of(
-				1L, RiskLevel.NONE,
-				2L, RiskLevel.BORDERLINE,
-				3L, RiskLevel.IN_DANGER,
-				4L, RiskLevel.EARLY_ONSET
-		);
-	}
-
 	@Nested
-	@DisplayName("evaluate() Tests")
+	@DisplayName("getRiskLevel() Tests")
 	class EvaluateTests {
-		private static final Long VALID_PATIENT_ID = 2L;
 		private static final Long INVALID_PATIENT_ID = 999L;
-		private static final PatientBean VALID_PATIENT = PatientBean.builder()
-				.id(VALID_PATIENT_ID)
-				.firstName("John")
-				.lastName("Doe")
-				.birthDate("1974-06-24")
-				.gender("M")
-				.address("Test Address")
-				.phoneNumber("123-456-7890")
-				.build();
 
+		/*
+		 * This test iterates through all valid patients defined in the RiskEvaluatorDataTest class,
+		 * retrieves the corresponding medical notes for each patient, and verifies that the getRiskLevel method
+		 * returns the expected risk level for each patient.
+		 */
 		@Test
-		@DisplayName("Should return risk level for valid patient id")
-		public void givenValidPatientId_whenEvaluate_thenReturnRiskLevel() {
-			when(patientProxy.getPatientById(anyLong())).thenReturn(VALID_PATIENT);
+		@DisplayName("Should return valid risk level for each valid patient id")
+		public void givenValidPatientIds_whenEvaluate_thenReturnRiskLevel() {
+			RiskEvaluatorDataTest.patientsList.forEach((riskLevel, validPatient) -> {
+				System.out.printf("Testing patient ID '%d' with expected risk level '%s'%n", validPatient.getId(), riskLevel);
+				List<MedicalNoteBean> validPatientNotes = RiskEvaluatorDataTest.medicalNotes.stream()
+						.filter(note -> note.getPatId().longValue() == validPatient.getId())
+						.toList();
+				when(patientProxy.getPatientById(anyLong())).thenReturn(validPatient);
+				when(medicalNoteProxy.getPatientMedicalNotes(anyLong())).thenReturn(validPatientNotes);
 
-			RiskLevel result = riskEvaluatorService.evaluate(VALID_PATIENT_ID);
+				RiskLevel result = riskEvaluatorService.getRiskLevel(validPatient.getId());
 
-			assertThat(result).isEqualTo(riskPatientLevels.get(VALID_PATIENT_ID));
+				assertThat(result).isEqualTo(riskLevel);
+			});
 		}
 
 		@Test
@@ -76,7 +71,7 @@ public class RiskEvaluatorServiceTests {
 			when(patientProxy.getPatientById(anyLong())).thenThrow(feign404(INVALID_PATIENT_ID));
 
 			PatientNotFoundException exception = assertThrows(PatientNotFoundException.class, () ->
-					riskEvaluatorService.evaluate(INVALID_PATIENT_ID)
+					riskEvaluatorService.getRiskLevel(INVALID_PATIENT_ID)
 			);
 
 			String expectedExceptionMessage = String.format("Patient not found with id: %d", INVALID_PATIENT_ID);

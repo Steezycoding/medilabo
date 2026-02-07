@@ -4,11 +4,11 @@ import com.medilabo.riskevaluatormicroservice.domain.enums.RiskLevel;
 
 public interface RiskEvaluatorService {
 	/**
-	 * Evaluates the risk level for a patient based on their medical notes and other relevant data.
+	 * Retrieves the risk level for a patient based on their ID.
 	 *
-	 * @param patientId The ID of the patient for whom the risk level is to be evaluated.
+	 * @param patientId
 	 *
-	 * @return The calculated risk level for the patient.
+	 * @return The risk level of the patient.
 	 */
-	RiskLevel evaluate(Long patientId);
+	RiskLevel getRiskLevel(Long patientId);
 }

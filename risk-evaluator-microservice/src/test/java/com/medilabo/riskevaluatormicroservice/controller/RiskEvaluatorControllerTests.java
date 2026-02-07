@@ -13,8 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Map;
-
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,25 +39,19 @@ public class RiskEvaluatorControllerTests {
 	@Nested
 	@DisplayName("ENDPOINT '/risk-evaluator/patient/{id}' Tests")
 	class RiskEvaluatorPatientIdTests {
-		private final Map<Long, RiskLevel> riskPatientLevels = Map.of(
-				1L, RiskLevel.NONE,
-				2L, RiskLevel.BORDERLINE,
-				3L, RiskLevel.IN_DANGER,
-				4L, RiskLevel.EARLY_ONSET
-		);
-
 		private static final Long PATIENT_ID = 3L;
+		private static final RiskLevel IN_DANGER = RiskLevel.IN_DANGER;
 
 		@Test
 		@DisplayName("GET /risk-evaluator/patient/{id} : Should respond OK & return the calculated risk level for patient id")
 		void getPatientRiskLevelTestWithValidPatient() throws Exception {
-			when(riskEvaluatorService.evaluate(anyLong())).thenReturn(riskPatientLevels.get(PATIENT_ID));
+			when(riskEvaluatorService.getRiskLevel(anyLong())).thenReturn(IN_DANGER);
 
 			mockMvc.perform(get("/risk-evaluator/patient/{patientId}", PATIENT_ID))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.riskLevel").value(riskPatientLevels.get(PATIENT_ID).name()));
+					.andExpect(jsonPath("$.riskLevel").value(IN_DANGER.name()));
 
-			verify(riskEvaluatorService, times(1)).evaluate(PATIENT_ID);
+			verify(riskEvaluatorService, times(1)).getRiskLevel(eq(PATIENT_ID));
 			verifyNoMoreInteractions(riskEvaluatorService);
 		}
 	}
