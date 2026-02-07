@@ -1,8 +1,23 @@
 server:
   port: 9103
+clients:
+  gateway-microservice:
+    api-url: http://localhost:9001/api
 spring:
   application:
     name: risk-evaluator-microservice
+  cloud:
+    openfeign:
+      client:
+        config:
+          patient-microservice:
+            url: ${clients.gateway-microservice.api-url}
+            connectTimeout: 5000
+            readTimeout: 5000
+          medical-note-microservice:
+            url: ${clients.gateway-microservice.api-url}
+            connectTimeout: 5000
+            readTimeout: 5000
 management:
   endpoints:
     web:
