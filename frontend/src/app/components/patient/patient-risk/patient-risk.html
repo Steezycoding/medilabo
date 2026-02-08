@@ -1,0 +1,25 @@
+<div class="patient-risk">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Risk</h5>
+      @if (loading) {
+        <div class="text-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="mt-2">Data loading...</div>
+        </div>
+      } @else {
+        <div class="alert {{alertClass(riskLevel)}}" role="alert">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold">Calculated level : <span class="fw-bold">{{ riskLabel(riskLevel) }}</span></div>
+              <div class="small opacity-75">Code : {{ riskLevel }}</div>
+            </div>
+            <span class="badge text-bg-light">Assessment</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
