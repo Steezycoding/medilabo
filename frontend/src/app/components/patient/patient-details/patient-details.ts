@@ -4,12 +4,14 @@ import {Patient} from '../../../model/Patient';
 import {PatientService} from '../../../services/patient.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {PatientNotesComponent} from '../patient-notes/patient-notes';
+import {PatientRiskComponent} from '../patient-risk/patient-risk';
 
 @Component({
   selector: 'app-patient-details',
   imports: [
     FormsModule,
-    PatientNotesComponent
+    PatientNotesComponent,
+    PatientRiskComponent
   ],
   templateUrl: './patient-details.html',
   styleUrl: './patient-details.scss',
