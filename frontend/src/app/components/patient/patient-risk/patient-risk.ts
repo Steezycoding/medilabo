@@ -12,8 +12,8 @@ import {RiskEvaluatorService} from '../../../services/risk-evaluator.service';
 export class PatientRiskComponent {
   @Input() patient!: Patient;
 
-  protected loading: boolean = false;
-  protected riskLevel: RiskLevel | null = null;
+  loading: boolean = false;
+  riskLevel: RiskLevel | null = null;
 
   private riskEvaluatorService: RiskEvaluatorService = inject(RiskEvaluatorService);
 
@@ -38,6 +38,7 @@ export class PatientRiskComponent {
         } else {
           console.error('Failed to retrieved risk level', err);
         }
+        this.loading = false;
       },
     });
   }
