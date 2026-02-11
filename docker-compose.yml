@@ -1,5 +1,5 @@
 services:
-  # Init databases for microservices
+  # Databases for microservices
   patient-ms-db:
     image: mysql:latest
     container_name: patient-ms-db
@@ -22,6 +22,20 @@ services:
     volumes:
       - medical-note-ms-db-data:/data/db
       - ./medical-note-microservice/src/main/resources/mongo-seed:/docker-entrypoint-initdb.d:ro
+    networks:
+      - medilabo-network
+
+  # Microservices
+  # Gateway microservice
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: gateway-microservice
+    env_file:
+      - .env
+    ports:
+      - "9001:9001"
     networks:
       - medilabo-network
 
