@@ -34,8 +34,32 @@ services:
     container_name: gateway-microservice
     env_file:
       - .env
+    environment:
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_0_ID: patient-microservice
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_0_URI: http://patient-microservice:9101
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_0_PREDICATES_0: Path=/api/patients/**
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_0_FILTERS_0: StripPrefix=1
     ports:
       - "9001:9001"
+    networks:
+      - medilabo-network
+
+  # Patient microservice
+  patient-microservice:
+    build:
+      context: ./patient-microservice
+      dockerfile: Dockerfile
+    container_name: patient-microservice
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://patient-ms-db:3306/patientdb?createDatabaseIfNotExists=true
+      SPRING_DATASOURCE_USERNAME: patientdb
+      SPRING_DATASOURCE_PASSWORD: patientdb
+    ports:
+      - "9101:9101"
+    depends_on:
+      - patient-ms-db
     networks:
       - medilabo-network
 
