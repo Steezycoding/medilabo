@@ -26,3 +26,7 @@ management:
   info:
     env:
       enabled: true
+security:
+  jwt:
+    gateway-shared-secret: ${AUTH_JWT_SECRET:change-me-this-secret-should-be-long-32-chars}
+    gateway-shared-issuer: ${AUTH_JWT_ISSUER:medilabo-gateway}
