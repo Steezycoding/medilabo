@@ -44,7 +44,7 @@ services:
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_PREDICATES_0: Path=/api/medical-notes/**
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_FILTERS_0: StripPrefix=1
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_ID: risk-evaluator-microservice
-      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_URI: http://risk-evaluator-microservice:9103
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_URI: http://risk-evaluator:9103
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_PREDICATES_0: Path=/api/risk-evaluator/**
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_FILTERS_0: StripPrefix=1
     ports:
@@ -98,13 +98,29 @@ services:
     build:
       context: ./risk-evaluator-microservice
       dockerfile: Dockerfile
-    container_name: risk-evaluator-microservice
+    container_name: risk-evaluator
     env_file:
       - .env
     environment:
+      SPRING_PROFILES_ACTIVE: docker
       CLIENTS_GATEWAY_MICROSERVICE_API_URL: http://gateway:9001/api
+      SECURITY_JWT_GATEWAY_SHARED_SECRET: ${AUTH_JWT_SECRET}
+      SECURITY_JWT_GATEWAY_SHARED_ISSUER: ${AUTH_JWT_ISSUER}
     ports:
       - "9103:9103"
+    depends_on:
+      - gateway
+    networks:
+      - medilabo-network
+
+  # Frontend Angular microservice
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "80:80"
     depends_on:
       - gateway
     networks:
