@@ -44,7 +44,7 @@ services:
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_PREDICATES_0: Path=/api/medical-notes/**
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_FILTERS_0: StripPrefix=1
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_ID: risk-evaluator-microservice
-      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_URI: http://risk-evaluator:9103
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_URI: http://risk-evaluator-microservice:9103
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_PREDICATES_0: Path=/api/risk-evaluator/**
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_FILTERS_0: StripPrefix=1
     ports:
@@ -98,7 +98,7 @@ services:
     build:
       context: ./risk-evaluator-microservice
       dockerfile: Dockerfile
-    container_name: risk-evaluator
+    container_name: risk-evaluator-microservice
     env_file:
       - .env
     environment:
