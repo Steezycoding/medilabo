@@ -39,6 +39,10 @@ services:
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_0_URI: http://patient-microservice:9101
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_0_PREDICATES_0: Path=/api/patients/**
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_0_FILTERS_0: StripPrefix=1
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_ID: medical-note-microservice
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_URI: http://medical-note-microservice:9102
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_PREDICATES_0: Path=/api/medical-notes/**
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_FILTERS_0: StripPrefix=1
     ports:
       - "9001:9001"
     networks:
@@ -60,6 +64,28 @@ services:
       - "9101:9101"
     depends_on:
       - patient-ms-db
+    networks:
+      - medilabo-network
+
+  # Medical note microservice
+  medical-note-microservice:
+    build:
+      context: ./medical-note-microservice
+      dockerfile: Dockerfile
+    container_name: medical-note-microservice
+    env_file:
+      - .env
+    ports:
+      - "9102:9102"
+    depends_on:
+      - medical-note-ms-db
+    environment:
+      SPRING_DATA_MONGODB_HOST: medical-note-ms-db
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: ${MONGO_INITDB_DATABASE}
+      SPRING_DATA_MONGODB_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      SPRING_DATA_MONGODB_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
     networks:
       - medilabo-network
 
