@@ -43,6 +43,10 @@ services:
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_URI: http://medical-note-microservice:9102
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_PREDICATES_0: Path=/api/medical-notes/**
       SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_FILTERS_0: StripPrefix=1
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_ID: risk-evaluator-microservice
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_URI: http://risk-evaluator-microservice:9103
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_PREDICATES_0: Path=/api/risk-evaluator/**
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_FILTERS_0: StripPrefix=1
     ports:
       - "9001:9001"
     networks:
@@ -86,6 +90,23 @@ services:
       SPRING_DATA_MONGODB_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       SPRING_DATA_MONGODB_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+    networks:
+      - medilabo-network
+
+  # Risk evaluator microservice
+  risk-evaluator-microservice:
+    build:
+      context: ./risk-evaluator-microservice
+      dockerfile: Dockerfile
+    container_name: risk-evaluator-microservice
+    env_file:
+      - .env
+    environment:
+      CLIENTS_GATEWAY_MICROSERVICE_API_URL: http://gateway:9001/api
+    ports:
+      - "9103:9103"
+    depends_on:
+      - gateway
     networks:
       - medilabo-network
 
