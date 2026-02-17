@@ -13,7 +13,7 @@ spring:
     show-sql: true
   sql:
     init:
-      mode: never
+      mode: always
       encoding: UTF-8
 security:
   jwt:

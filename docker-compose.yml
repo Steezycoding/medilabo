@@ -9,6 +9,7 @@ services:
       - "3307:3306"
     volumes:
       - patient-ms-db-data:/var/lib/mysql
+      - ./patient-microservice/src/main/resources:/docker-entrypoint-initdb.d:ro
     networks:
       - medilabo-network
 
