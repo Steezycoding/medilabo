@@ -49,6 +49,9 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Force Docker API Version
+        run: echo 'api.version=1.44' > ~/.docker-java.properties
+
       - name: Compile module
         run: ./${{ matrix.module }}/mvnw -f ${{ matrix.module }}/pom.xml -B -DskipTests compile
 
