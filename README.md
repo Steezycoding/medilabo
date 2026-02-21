@@ -137,3 +137,10 @@ The default credentials for authentication are:
 
 - Username: `user`
 - Password: `user`
+
+## 🍃 Green Code
+
+Please refer to the [Green Code (EN)](./docs/green-code/green_code_en.md) guidelines for best practices on writing
+clean, maintainable, and efficient code within this project.
+
+French version: [Green Code (FR)](./docs/green-code/green_code_fr.md)
