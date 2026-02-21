@@ -1,5 +1,4 @@
 #!/bin/sh
-set -e
 
 echo "[init] Waiting for Mongo to be ready..."
 until mongosh --host localhost -u root -p example --authenticationDatabase admin --quiet --eval "db.runCommand({ ping: 1 }).ok" >/dev/null 2>&1
