@@ -151,6 +151,11 @@ For integration tests that depend on external resources (especially databases), 
 services
 are available.
 
+**Postman / API testing**
+
+You can also use Postman with the [dedicated collection](martru_medilabo.postman_collection.json) provided in the
+`/docs` folder to test the API endpoints.
+
 ## 🚨 Troubleshooting
 
 - **Logs**: use `docker compose logs -f` or the console output from `./mvnw spring-boot:run`.
