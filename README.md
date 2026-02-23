@@ -50,6 +50,33 @@ The system is structured as follows:
     - Aggregates data from Patient and Medical Note microservices
     - Uses OpenFeign to consume internal APIs
 
+```mermaid
+C4Container
+    title Container diagram for Medilabo RET2D
+    Person(user, "User", "A healthcare professional using the application")
+
+    Container_Boundary(ret2dContainer, "Medilabo RET2D Application") {
+        Container(frontend, "Frontend (Angular SPA)", "Angular", "User interface for healthcare professionals.")
+        Container(gateway, "API Gateway", "Spring Cloud Gateway", "Routes traffic and handles authentication.")
+
+        Container_Boundary(ret2dSvcContainer, "Medilabo RET2D Microservices") {
+            Container(ret2dMsvc, "RET2D Microservices", "Spring Boot", "Contains all backend microservices for patient management, medical notes, and risk evaluation.")
+        }
+    }
+
+    Container_Boundary(databasesContainer, "Databases") {
+        ContainerDb(patientDb, "MySQL Database", "Stores patient data")
+        ContainerDb(medicalNotesDb, "MongoDB Database", "Stores medical notes data")
+    }
+
+    Rel(user, frontend, "Uses", "HTTP")
+    Rel(frontend, gateway, "Sends API requests", "HTTP/REST")
+    Rel(gateway, ret2dMsvc, "Routes requests to microservices", "HTTP/REST")
+    Rel(ret2dMsvc, patientDb, "Reads/writes patient data", "JDBC")
+    Rel(ret2dMsvc, medicalNotesDb, "Reads/writes medical notes data", "JDBC")
+    UpdateLayoutConfig($c4ShapeInRow="2", $c4BoundaryInRow="1")
+```
+
 ---
 
 ## 🧰 Tech Stack
@@ -90,12 +117,30 @@ The system is structured as follows:
 
 ## 🔐 Security workflow
 
-Authentication is based on **JWT** tokens.
+Authentication is based on **Basic** Auth & **JWT** tokens.
 
 - Users authenticate via the API Gateway, which issues a JWT token stored within cookies upon successful login.
 - The Gateway extracts JWT from cookies and validates tokens before routing requests.
 - Microservices validate JWT signatures using a shared secret/issuer configuration.
 - Access to protected microservice's endpoints requires a valid `Authorization: Bearer <token>` header.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant APIGateway
+    participant Microservice
+    User ->> Frontend: Enters credentials and submits login form
+    Frontend ->> APIGateway: GET /auth/token with Basic Auth header (username:password)
+    APIGateway ->> APIGateway: Validate credentials
+    APIGateway ->> Frontend: Set-Cookie: JWT token
+    Frontend ->> APIGateway: Subsequent API request with Cookie: JWT token
+    APIGateway ->> APIGateway: Extract and validate JWT token
+    APIGateway ->> Microservice: Forward request with Authorization: Bearer <token>
+    Microservice ->> Microservice: Validate JWT token
+    Microservice ->> APIGateway: Return response
+    APIGateway ->> Frontend: Return response to frontend
+```
 
 ---
 
