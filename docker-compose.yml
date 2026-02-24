@@ -25,6 +25,11 @@ services:
       - .env
     ports:
       - "27018:27017"
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - medical-note-ms-db-data:/data/db
       - ./medical-note-microservice/src/main/resources/mongo-seed:/docker-entrypoint-initdb.d:ro
@@ -96,7 +101,8 @@ services:
     ports:
       - "9102:9102"
     depends_on:
-      - medical-note-ms-db
+      medical-note-ms-db:
+        condition: service_healthy
     networks:
       - medilabo-network
 
