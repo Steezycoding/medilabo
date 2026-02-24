@@ -7,6 +7,11 @@ services:
       - .env
     ports:
       - "3307:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - patient-ms-db-data:/var/lib/mysql
       - ./patient-microservice/src/main/resources:/docker-entrypoint-initdb.d:ro
@@ -20,6 +25,11 @@ services:
       - .env
     ports:
       - "27018:27017"
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - medical-note-ms-db-data:/data/db
       - ./medical-note-microservice/src/main/resources/mongo-seed:/docker-entrypoint-initdb.d:ro
@@ -68,7 +78,8 @@ services:
     ports:
       - "9101:9101"
     depends_on:
-      - patient-ms-db
+      patient-ms-db:
+        condition: service_healthy
     networks:
       - medilabo-network
 
@@ -90,7 +101,8 @@ services:
     ports:
       - "9102:9102"
     depends_on:
-      - medical-note-ms-db
+      medical-note-ms-db:
+        condition: service_healthy
     networks:
       - medilabo-network
 
