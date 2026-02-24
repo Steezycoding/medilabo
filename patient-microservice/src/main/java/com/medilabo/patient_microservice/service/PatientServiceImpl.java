@@ -24,6 +24,11 @@ public class PatientServiceImpl implements PatientService {
 		this.patientRepository = patientRepository;
 	}
 
+	/**
+	 * Retrieves all patients from the database and converts them to a list of PatientDto objects.
+	 *
+	 * @return A list of PatientDto objects representing all patients in the database.
+	 */
 	@Override
 	public List<PatientDto> getAll() {
 		return patientRepository.findAll()
@@ -32,6 +37,16 @@ public class PatientServiceImpl implements PatientService {
 				.toList();
 	}
 
+	/**
+	 * Retrieves a patient by their ID. If the patient is found, it is converted to a PatientDto object and returned.
+	 * If the patient is not found, a PatientIdNotFoundException is thrown.
+	 *
+	 * @param patientId The ID of the patient to be retrieved.
+	 *
+	 * @return A PatientDto object representing the patient with the specified ID.
+	 *
+	 * @throws PatientIdNotFoundException if no patient with the specified ID exists in the database.
+	 */
 	@Override
 	public PatientDto getById(Long patientId) {
 		return patientRepository.findById(patientId)
@@ -39,6 +54,18 @@ public class PatientServiceImpl implements PatientService {
 				.orElseThrow(() -> new PatientIdNotFoundException(patientId));
 	}
 
+	/**
+	 * Updates an existing patient with the provided details. If the patient with the specified ID exists, it is updated
+	 * with the new details and saved to the database.
+	 * If the patient with the specified ID does not exist, a PatientIdNotFoundException is thrown.
+	 *
+	 * @param id      The ID of the patient to be updated.
+	 * @param patient A PatientDto object containing the new details for the patient.
+	 *
+	 * @return A PatientDto object representing the updated patient.
+	 *
+	 * @throws PatientIdNotFoundException if no patient with the specified ID exists in the database.
+	 */
 	@Override
 	public PatientDto update(Long id, PatientDto patient) {
 		return patientRepository.findById(id)
@@ -62,6 +89,15 @@ public class PatientServiceImpl implements PatientService {
 				.orElseThrow(() -> new PatientIdNotFoundException(id));
 	}
 
+	/**
+	 * Creates a new patient in the database using the details provided in the PatientDto object.
+	 *
+	 * @param patientDto A PatientDto object containing the details of the patient to be created.
+	 *
+	 * @return A PatientDto object representing the newly created patient, including its generated ID.
+	 *
+	 * @throws ParseException if there is an error parsing the birthdate from the PatientDto.
+	 */
 	@Override
 	public PatientDto create(PatientDto patientDto) throws ParseException {
 		Patient createdPatientEntity = patientRepository.save(patientDto.toEntity());
