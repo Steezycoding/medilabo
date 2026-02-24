@@ -7,6 +7,11 @@ services:
       - .env
     ports:
       - "3307:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - patient-ms-db-data:/var/lib/mysql
       - ./patient-microservice/src/main/resources:/docker-entrypoint-initdb.d:ro
@@ -68,7 +73,8 @@ services:
     ports:
       - "9101:9101"
     depends_on:
-      - patient-ms-db
+      patient-ms-db:
+        condition: service_healthy
     networks:
       - medilabo-network
 
