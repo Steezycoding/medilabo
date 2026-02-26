@@ -22,6 +22,7 @@ public class MedicalNoteServiceImpl implements MedicalNoteService {
 
 	/**
 	 * Retrieves medical notes for a specific patient by his ID.
+	 * The medical notes are ordered by their creation date in descending order (most recent first).
 	 *
 	 * @param patientId The ID of the patient whose medical notes are to be retrieved.
 	 *
@@ -29,7 +30,7 @@ public class MedicalNoteServiceImpl implements MedicalNoteService {
 	 */
 	@Override
 	public List<MedicalNoteDto> getMedicalNotesByPatientId(Integer patientId) {
-		return medicalNoteRepository.getMedicalNotesByPatId(patientId).stream()
+		return medicalNoteRepository.findAllByPatIdOrderByCreatedAtDesc(patientId).stream()
 				.map(MedicalNoteDto::fromEntity)
 				.toList();
 	}

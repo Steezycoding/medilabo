@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface MedicalNoteRepository extends MongoRepository<MedicalNote, String> {
-	List<MedicalNote> getMedicalNotesByPatId(Integer patId);
+	List<MedicalNote> findAllByPatIdOrderByCreatedAtDesc(Integer patId);
 
 	void deleteMedicalNoteById(String id);
 }

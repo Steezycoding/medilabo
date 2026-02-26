@@ -32,22 +32,25 @@ class MedicalNoteServiceTests {
 	class GetMedicalNotesByPatientIdTests {
 
 		@Test
-		@DisplayName("Should return medical notes for given patient ID")
-		public void givenPatientId_whenGetMedicalNotesByPatientId_thenReturnMedicalNotes() {
+		@DisplayName("Should return medical notes for given patient ID ordered by creation date descending")
+		public void givenPatientId_whenGetMedicalNotesByPatientId_thenReturnMedicalNotesDateDesc() {
+			Date now = new Date();
+			Date nowMinusOneDay = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
 			List<MedicalNote> medicalNotes = List.of(
-					new MedicalNote("a123b456", 1, "JohnDoe", "Prescribed new medication.", new Date()),
-					new MedicalNote("c789d012", 1, "JohnDoe", "Patient shows signs of improvement.", new Date())
+					new MedicalNote("c789d012", 1, "JohnDoe", "Patient shows signs of improvement.", now),
+					new MedicalNote("a123b456", 1, "JohnDoe", "Prescribed new medication.", nowMinusOneDay)
 			);
 
-			when(medicalNoteRepository.getMedicalNotesByPatId(anyInt())).thenReturn(medicalNotes);
+			when(medicalNoteRepository.findAllByPatIdOrderByCreatedAtDesc(anyInt())).thenReturn(medicalNotes);
 
 			List<MedicalNoteDto> result = medicalNoteService.getMedicalNotesByPatientId(1);
 
 			assertThat(result).hasSize(2);
-			assertThat(result.get(0).getId()).isEqualTo("a123b456");
-			assertThat(result.get(1).getId()).isEqualTo("c789d012");
+			assertThat(result.get(0).getId()).isEqualTo("c789d012");
+			assertThat(result.get(1).getId()).isEqualTo("a123b456");
 
-			verify(medicalNoteRepository).getMedicalNotesByPatId(eq(1));
+			verify(medicalNoteRepository).findAllByPatIdOrderByCreatedAtDesc(eq(1));
 			verifyNoMoreInteractions(medicalNoteRepository);
 		}
 	}
