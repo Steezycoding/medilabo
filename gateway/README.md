@@ -37,6 +37,7 @@ Tests
 
 - run `./mvnw test` (unitary tests)
 - run `./mvnw verify` (unitary + integration tests)
+- run `./mvnw verify site` (unitary + integration tests + project documentation & reports)
 
 Notes
 
