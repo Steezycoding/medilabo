@@ -58,3 +58,14 @@ From the **repository root**, you can build and run the microservice using Docke
 ```bash
   docker compose up -d patient-microservice
 ```
+
+## 🧪 Testing app
+
+To run tests for this microservice, you can use the following command from the **module root**:
+
+```bash
+  ./mvnw clean verify site
+```
+
+This will execute all tests and generate a test report and project information in the `target/site` directory.  
+You can open the `index.html` file in that directory to view these information.
