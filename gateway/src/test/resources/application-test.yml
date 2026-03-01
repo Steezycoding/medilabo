@@ -1,0 +1,6 @@
+security:
+  jwt:
+    secret: change-me-this-secret-should-be-long-32-chars
+    access-expiration-seconds: 60
+    refresh-expiration-seconds: 180
+    issuer: medilabo-gateway-test

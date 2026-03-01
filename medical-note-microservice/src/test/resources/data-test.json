@@ -1,0 +1,65 @@
+[
+  {
+	"_id": { "$oid": "6967ba0850e332d34fcc00dc" },
+	"patId": 1,
+	"patient": "TestNone",
+	"note": "Le patient déclare qu'il 'se sent très bien' Poids égal ou inférieur au poids recommandé",
+	"createdAt": "2024-06-01T10:00:00Z"
+  },
+  {
+	"_id": { "$oid": "6967ba0850e332d34fcc00dd" },
+	"patId": 2,
+	"patient": "TestBorderline",
+	"note": "Le patient déclare qu'il ressent beaucoup de stress au travail Il se plaint également que son audition est anormale dernièrement",
+	"createdAt": "2024-06-02T11:30:00Z"
+  },
+  {
+	"_id": { "$oid": "6967ba0850e332d34fcc00de" },
+	"patId": 2,
+	"patient": "TestBorderline",
+	"note": "Le patient déclare avoir fait une réaction aux médicaments au cours des 3 derniers mois Il remarque également que son audition continue d'être anormale",
+	"createdAt": "2024-06-03T09:15:00Z"
+  },
+  {
+	"_id": { "$oid": "6967ba0850e332d34fcc00df" },
+	"patId": 3,
+	"patient": "TestInDanger",
+	"note": "Le patient déclare qu'il fume depuis peu",
+	"createdAt": "2024-06-04T14:45:00Z"
+  },
+  {
+	"_id": { "$oid": "6967ba0850e332d34fcc00e0" },
+	"patId": 3,
+	"patient": "TestInDanger",
+	"note": "Le patient déclare qu'il est fumeur et qu'il a cessé de fumer l'année dernière Il se plaint également de crises d’apnée respiratoire anormales Tests de laboratoire indiquant un taux de cholestérol LDL élevé",
+	"createdAt": "2024-06-03T09:15:00Z"
+  },
+  {
+	"_id": { "$oid": "6967ba0850e332d34fcc00e1" },
+	"patId": 4,
+	"patient": "TestEarlyOnset",
+	"note": "Le patient déclare qu'il lui est devenu difficile de monter les escaliers Il se plaint également d’être essoufflé Tests de laboratoire indiquant que les anticorps sont élevés Réaction aux médicaments",
+	"createdAt": "2024-06-05T08:20:00Z"
+  },
+  {
+	"_id": { "$oid": "6967ba0850e332d34fcc00e2" },
+	"patId": 4,
+	"patient": "TestEarlyOnset",
+	"note": "Le patient déclare qu'il a mal au dos lorsqu'il reste assis pendant longtemps",
+	"createdAt": "2024-06-03T09:15:00Z"
+  },
+  {
+	"_id": { "$oid": "6967ba0850e332d34fcc00e3" },
+	"patId": 4,
+	"patient": "TestEarlyOnset",
+	"note": "Le patient déclare avoir commencé à fumer depuis peu Hémoglobine A1C supérieure au niveau recommandé",
+	"createdAt": "2024-06-06T12:10:00Z"
+  },
+  {
+	"_id": { "$oid": "6967ba0850e332d34fcc00e4" },
+	"patId": 4,
+	"patient": "TestEarlyOnset",
+	"note": "Taille, Poids, Cholestérol, Vertige et Réaction",
+	"createdAt": "2024-06-07T15:55:00Z"
+  }
+]

@@ -1,0 +1,37 @@
+package com.medilabo.medicalnotemicroservice.controller.dto;
+
+import com.medilabo.medicalnotemicroservice.domain.MedicalNote;
+import lombok.Builder;
+import lombok.Data;
+
+import java.util.Date;
+
+@Data
+@Builder
+public class MedicalNoteDto {
+	private String id;
+	private Integer patId;
+	private String patient;
+	private String note;
+	private Date createdAt;
+
+	public static MedicalNoteDto fromEntity(MedicalNote note) {
+		return MedicalNoteDto.builder()
+				.id(note.getId())
+				.patId(note.getPatId())
+				.patient(note.getPatient())
+				.note(note.getNote())
+				.createdAt(note.getCreatedAt())
+				.build();
+	}
+
+	public MedicalNote toEntity() {
+		return MedicalNote.builder()
+				.id(this.id)
+				.patId(this.patId)
+				.patient(this.patient)
+				.note(this.note)
+				.createdAt(this.createdAt)
+				.build();
+	}
+}

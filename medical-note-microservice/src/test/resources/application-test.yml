@@ -1,0 +1,4 @@
+security:
+  jwt:
+    gateway-shared-secret: change-me-this-secret-should-be-long-32-chars
+    gateway-shared-issuer: medilabo-gateway

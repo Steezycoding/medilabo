@@ -1,0 +1,689 @@
+{
+  "info": {
+    "_postman_id": "190322ae-edf1-474d-811d-21d314ac24b7",
+    "name": "P9 - Medilabo",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31937640"
+  },
+  "item": [
+    {
+      "name": "Gateway",
+      "item": [
+        {
+          "name": "Actuators",
+          "item": [
+            {
+              "name": "[GW] Server Health",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/actuator/health",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "actuator",
+                    "health"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[GW] Server Info",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/actuator/info",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "actuator",
+                    "info"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[GW] Gateway Info",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/actuator/gateway",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "actuator",
+                    "gateway"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Patients",
+          "item": [
+            {
+              "name": "[GW] Get Patients",
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/api/patients",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "patients"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[GW] Get Patient By Id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/api/patients/1",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "patients",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[GW] Create Patient",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"id\": null,\r\n    \"lastName\": \"TestCreatePatient\",\r\n    \"firstName\": \"Test\",\r\n    \"birthDate\": \"2025-10-22\",\r\n    \"gender\": \"F\",\r\n    \"address\": \"666 Saints Row\",\r\n    \"phoneNumber\": \"999-8888-777\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{patientURL}}/patients",
+                  "host": [
+                    "{{patientURL}}"
+                  ],
+                  "path": [
+                    "patients"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[GW] Update Patient By Id",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"lastName\": \"TestMicroservice\",\r\n    \"firstName\": \"Test\",\r\n    \"birthDate\": \"2025-10-22\",\r\n    \"gender\": \"F\",\r\n    \"address\": \"666 Saints Row\",\r\n    \"phoneNumber\": \"999-888-7777\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{patientURL}}/patients/5",
+                  "host": [
+                    "{{patientURL}}"
+                  ],
+                  "path": [
+                    "patients",
+                    "5"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "MedicalNote",
+          "item": [
+            {
+              "name": "[GW] Get Notes By PatientId",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/api/medical-notes/patient/2",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "medical-notes",
+                    "patient",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[GW] Create Note",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"patId\": 2,\r\n    \"patient\": \"TestBorderline\",\r\n    \"note\": \"Le patient signale des douleurs thoraciques occasionnelles et une fatigue accrue ces dernières semaines.\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{gatewayURL}}/api/medical-notes",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "medical-notes"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[GW] Delete Note",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/api/medical-notes/697219467cb1c27a3d19f6f5",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "medical-notes",
+                    "697219467cb1c27a3d19f6f5"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "RiskEvaluator",
+          "item": [
+            {
+              "name": "[GW] Get Patient Risk",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/api/risk-evaluator/patient/1",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "risk-evaluator",
+                    "patient",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "[GW] Get token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Get the Set-Cookie header from the response",
+                      "const setCookieHeader = pm.response.headers.get(\"Set-Cookie\");",
+                      "",
+                      "let token = null;",
+                      "",
+                      "// Extract the JWT token from the 'access_token=' key in the Set-Cookie header",
+                      "if (setCookieHeader) {",
+                      "    // Handle both single cookie and multiple cookies (array or semicolon-separated)",
+                      "    const cookies = Array.isArray(setCookieHeader) ? setCookieHeader.join(\"; \") : setCookieHeader;",
+                      "    ",
+                      "    // Match access_token value (stops at semicolon or end of string)",
+                      "    const match = cookies.match(/access_token=([^;]+)/);",
+                      "    if (match && match[1]) {",
+                      "        token = match[1];",
+                      "    }",
+                      "}",
+                      "",
+                      "// Store the token in the environment variable 'bearerToken'",
+                      "if (token) {",
+                      "    pm.environment.set(\"bearerToken\", token);",
+                      "    console.log(\"JWT token successfully extracted from Set-Cookie header and stored in 'bearerToken' environment variable\");",
+                      "} else {",
+                      "    console.warn(\"No JWT token found in Set-Cookie header under 'access_token=' key\");",
+                      "}",
+                      "",
+                      "// Test to verify the token was successfully stored",
+                      "pm.test(\"JWT token is extracted from Set-Cookie header and stored in environment\", function () {",
+                      "    pm.expect(token).to.be.a(\"string\").and.not.be.empty;",
+                      "    pm.expect(pm.environment.get(\"bearerToken\")).to.eql(token);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "user",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "user",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/auth/token",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "token"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[GW] Check token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/auth/check",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "check"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[GW] Refresh token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/auth/refresh",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[GW] Logout",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{gatewayURL}}/auth/logout",
+                  "host": [
+                    "{{gatewayURL}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patient MS",
+      "item": [
+        {
+          "name": "Get Patients",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{patientURL}}/patients",
+              "host": [
+                "{{patientURL}}"
+              ],
+              "path": [
+                "patients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Patient By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{patientURL}}/patients/1",
+              "host": [
+                "{{patientURL}}"
+              ],
+              "path": [
+                "patients",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Patient",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": null,\r\n    \"lastName\": \"TestCreatePatient\",\r\n    \"firstName\": \"Test\",\r\n    \"birthDate\": \"2025-10-22\",\r\n    \"gender\": \"F\",\r\n    \"address\": \"666 Saints Row\",\r\n    \"phoneNumber\": \"999-8888-777\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{patientURL}}/patients",
+              "host": [
+                "{{patientURL}}"
+              ],
+              "path": [
+                "patients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Patient By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"lastName\": \"TestMicroservice\",\r\n    \"firstName\": \"Test\",\r\n    \"birthDate\": \"2025-10-22\",\r\n    \"gender\": \"F\",\r\n    \"address\": \"666 Saints Row\",\r\n    \"phoneNumber\": \"999-888-7777\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{patientURL}}/patients/5",
+              "host": [
+                "{{patientURL}}"
+              ],
+              "path": [
+                "patients",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "MedicalNote MS",
+      "item": [
+        {
+          "name": "Get Notes By PatientId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{medicalNoteURL}}/medical-notes/patient/2",
+              "host": [
+                "{{medicalNoteURL}}"
+              ],
+              "path": [
+                "medical-notes",
+                "patient",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Note",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"patId\": 2,\r\n    \"patient\": \"TestBorderline\",\r\n    \"note\": \"Le patient signale des douleurs thoraciques occasionnelles et une fatigue accrue ces dernières semaines.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{medicalNoteURL}}/medical-notes",
+              "host": [
+                "{{medicalNoteURL}}"
+              ],
+              "path": [
+                "medical-notes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Note",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{medicalNoteURL}}/medical-notes/6973822bda5049f897e7add6",
+              "host": [
+                "{{medicalNoteURL}}"
+              ],
+              "path": [
+                "medical-notes",
+                "6973822bda5049f897e7add6"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "RiskEvaluator MS",
+      "item": [
+        {
+          "name": "Get Patient Risk",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{riskEvaluatorURL}}/risk-evaluator/patient/4",
+              "host": [
+                "{{riskEvaluatorURL}}"
+              ],
+              "path": [
+                "risk-evaluator",
+                "patient",
+                "4"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

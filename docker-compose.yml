@@ -1,0 +1,144 @@
+services:
+  # Databases for microservices
+  patient-ms-db:
+    image: mysql:latest
+    container_name: patient-ms-db
+    env_file:
+      - .env
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - patient-ms-db-data:/var/lib/mysql
+      - ./patient-microservice/src/main/resources:/docker-entrypoint-initdb.d:ro
+    networks:
+      - medilabo-network
+
+  medical-note-ms-db:
+    image: mongo:latest
+    container_name: medical-note-ms-db
+    env_file:
+      - .env
+    ports:
+      - "27018:27017"
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - medical-note-ms-db-data:/data/db
+      - ./medical-note-microservice/src/main/resources/mongo-seed:/docker-entrypoint-initdb.d:ro
+    networks:
+      - medilabo-network
+
+  # Microservices
+  # Gateway microservice
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: gateway-microservice
+    env_file:
+      - .env
+    environment:
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_0_ID: patient-microservice
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_0_URI: http://patient-microservice:9101
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_0_PREDICATES_0: Path=/api/patients/**
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_0_FILTERS_0: StripPrefix=1
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_ID: medical-note-microservice
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_URI: http://medical-note-microservice:9102
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_PREDICATES_0: Path=/api/medical-notes/**
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_1_FILTERS_0: StripPrefix=1
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_ID: risk-evaluator-microservice
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_URI: http://risk-evaluator-microservice:9103
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_PREDICATES_0: Path=/api/risk-evaluator/**
+      SPRING_CLOUD_GATEWAY_SERVER_WEBMVC_ROUTES_2_FILTERS_0: StripPrefix=1
+    ports:
+      - "9001:9001"
+    networks:
+      - medilabo-network
+
+  # Patient microservice
+  patient-microservice:
+    build:
+      context: ./patient-microservice
+      dockerfile: Dockerfile
+    container_name: patient-microservice
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://patient-ms-db:3306/${MYSQL_DATABASE}?createDatabaseIfNotExists=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "9101:9101"
+    depends_on:
+      patient-ms-db:
+        condition: service_healthy
+    networks:
+      - medilabo-network
+
+  # Medical note microservice
+  medical-note-microservice:
+    build:
+      context: ./medical-note-microservice
+      dockerfile: Dockerfile
+    container_name: medical-note-microservice
+    env_file:
+      - .env
+    environment:
+      SPRING_DATA_MONGODB_HOST: medical-note-ms-db
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: ${MONGO_INITDB_DATABASE}
+      SPRING_DATA_MONGODB_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      SPRING_DATA_MONGODB_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+    ports:
+      - "9102:9102"
+    depends_on:
+      medical-note-ms-db:
+        condition: service_healthy
+    networks:
+      - medilabo-network
+
+  # Risk evaluator microservice
+  risk-evaluator-microservice:
+    build:
+      context: ./risk-evaluator-microservice
+      dockerfile: Dockerfile
+    container_name: risk-evaluator-microservice
+    env_file:
+      - .env
+    environment:
+      CLIENTS_GATEWAY_MICROSERVICE_API_URL: http://gateway:9001/api
+    ports:
+      - "9103:9103"
+    depends_on:
+      - gateway
+    networks:
+      - medilabo-network
+
+  # Frontend Angular microservice
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway
+    networks:
+      - medilabo-network
+
+volumes:
+  patient-ms-db-data:
+  medical-note-ms-db-data:
+
+networks:
+  medilabo-network:

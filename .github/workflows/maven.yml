@@ -8,7 +8,9 @@ on:
     paths:
       - 'gateway/**'
       - 'patient-microservice/**'
-      - '.github/workflows/java-module-ci.yml'
+      - 'medical-note-microservice/**'
+      - 'risk-evaluator-microservice/**'
+      - '.github/workflows/maven.yml'
 
 jobs:
   build-and-test:
@@ -22,6 +24,14 @@ jobs:
             integration_pattern: '*IntegrationTest'
           - name: Patient microservice
             module: patient-microservice
+            unit_pattern: '*Tests'
+            integration_pattern: '*IntegrationTest'
+          - name: MedicalNote microservice
+            module: medical-note-microservice
+            unit_pattern: '*Tests'
+            integration_pattern: '*IntegrationTest'
+          - name: RiskEvaluator microservice
+            module: risk-evaluator-microservice
             unit_pattern: '*Tests'
             integration_pattern: '*IntegrationTest'
     name: Run ${{ matrix.name }} pipeline
@@ -39,6 +49,9 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Force Docker API Version
+        run: echo 'api.version=1.44' > ~/.docker-java.properties
+
       - name: Compile module
         run: ./${{ matrix.module }}/mvnw -f ${{ matrix.module }}/pom.xml -B -DskipTests compile
 
@@ -46,7 +59,7 @@ jobs:
         run: ./${{ matrix.module }}/mvnw -f ${{ matrix.module }}/pom.xml -B "-Dtest=${{ matrix.unit_pattern }}" -DfailIfNoTests=false test
 
       - name: Run integration tests
-        run: ./${{ matrix.module }}/mvnw -f ${{ matrix.module }}/pom.xml -B "-Dtest=${{ matrix.integration_pattern }}" -DfailIfNoTests=false test
+        run: ./${{ matrix.module }}/mvnw -f ${{ matrix.module }}/pom.xml -B "-Dtest=${{ matrix.integration_pattern }}" -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false verify
 
       - name: Package module
         run: ./${{ matrix.module }}/mvnw -f ${{ matrix.module }}/pom.xml -B -DskipTests package
