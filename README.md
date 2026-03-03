@@ -176,7 +176,7 @@ Then, from the **root directory of the project**, execute:
   docker compose up -d
 ```
 
-Frontend will be available at http://localhost.
+Frontend will be available at http://localhost:8080.
 
 The default credentials for authentication are:
 
